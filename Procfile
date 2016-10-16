@@ -1,1 +1,1 @@
-python app/routes.py $PORT
+web: python app/routes.py $PORT
