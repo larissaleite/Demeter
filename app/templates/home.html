@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="col-md-2">
+</div>
+
+<div class="col-md-7">
+{% for recipe in recipes %}
+  <div class="row">
+
+      <div class="col-md-4">
+          <div class="recipe_img">
+              <img class="img-circle" src="{{ recipe.img }}">
+          </div>
+      </div>
+
+      <div class="col-md-8">
+          <div class="recipe_title">
+              {{ recipe.title }}
+          </div>
+          <br>
+          <div class="recipe_instructions">
+              {{ recipe.instructions }}
+          </div>
+      </div>
+
+  </div>
+  <hr>
+{% endfor %}
+
+</div>
+
+<div class="col-md-3">
+</div>
+
+{% endblock content %}

@@ -1,36 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="col-md-2">
-</div>
+<style>
 
-<div class="col-md-7">
-{% for recipe in recipes %}
-  <div class="row">
+.btn-facebook, .btn-facebook:hover {
+  text-align:center;
+  font-family: 'Lucida Grande';
+  width:70%;
+  margin-left:10%;
+}
 
-      <div class="col-md-4">
-          <div class="recipe_img">
-              <img class="img-circle" src="{{ recipe.img }}">
-          </div>
-      </div>
+.main {
+    margin-left: 7%;
+}
 
-      <div class="col-md-8">
-          <div class="recipe_title">
-              {{ recipe.title }}
-          </div>
-          <br>
-          <div class="recipe_instructions">
-              {{ recipe.instructions }}
-          </div>
-      </div>
-
-  </div>
-  <hr>
-{% endfor %}
-
-</div>
+</style>
 
 <div class="col-md-3">
+</div>
+
+<div class="col-md-5 main">
+  <img src="{{ url_for('static', filename='images/demeter.png') }}">
+
+  <div id="facebook-login-btn">
+   <a href="/login" class="btn btn-block btn-social btn-facebook btn-lg">
+    <i class="fa fa-facebook"></i> Log in in with Facebook
+   </a>
+  </div>
+</div>
+
+<div class="col-md-4">
 </div>
 
 {% endblock content %}

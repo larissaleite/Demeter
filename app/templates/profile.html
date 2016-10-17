@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="col-md-2">
+</div>
+
+<div class="col-md-7">
+
+    <p>{{ current_user.first_name }} {{ current_user.last_name }}</p>
+
+    <div class="row">
+        <form action="/register" method="post">
+          <div class="col-xs-6">
+            <div class="form-group">
+              <label>Age</label>
+              <input type="text" class="form-control" placeholder="Age" name="age" />
+            </div>
+          </div>
+
+          <div class="col-xs-6">
+            <label>Gender</label>
+            <input type="text" class="form-control" placeholder="Gender" name="gender" />
+          </div>
+
+        </div>
+
+        <div class="row">
+
+              <div class="col-xs-12">
+                <label>Location</label>
+                <input type="text" class="form-control" placeholder="Location" name="location" />
+              </div>
+
+            </div>
+
+        <input type="submit" class="btn btn-success"/>
+    </form>
+</div>
+
+<div class="col-md-3">
+</div>
+
+{% endblock content %}
