@@ -4,23 +4,57 @@
 <div class="col-md-2">
 </div>
 
-<div class="col-md-7">
+<div class="col-md-10">
 {% for recipe in recipes %}
   <div class="row">
 
-      <div class="col-md-4">
-          <div class="recipe_img">
-              <img class="img-circle" src="{{ recipe.img }}">
+      <div class="col-md-4 img_box">
+          <div class="recipe_img thumbnail">
+              <img src="{{ recipe.img }}">
           </div>
       </div>
 
       <div class="col-md-8">
           <div class="recipe_title">
-              {{ recipe.title }}
+              <h4>{{ recipe.title }}</h4>
           </div>
+
+          <div class="recipe_characteristics">
+              {% if recipe.vegetarian %}
+                <i class="fa fa-check" aria-hidden="true"></i> Vegetarian
+              {% else %}
+                <i class="fa fa-ban" aria-hidden="true"></i> Vegetarian
+              {% endif %}
+
+              {% if recipe.glutenFree %}
+                <i class="fa fa-check" aria-hidden="true"></i> Gluten
+              {% else %}
+                <i class="fa fa-ban" aria-hidden="true"></i> Gluten
+              {% endif %}
+
+              {% if recipe.dairyFree %}
+                <i class="fa fa-check" aria-hidden="true"></i> Dairy
+              {% else %}
+                <i class="fa fa-ban" aria-hidden="true"></i> Dairy
+              {% endif %}
+          </div>
+
           <br>
+
+          <div class="recipe_ingredients">
+            <p>Ingredients</p>
+            {% for ingredient in recipe.ingredients %}
+                <i class="fa fa-cutlery" aria-hidden="true"></i> {{ ingredient.text }}
+                <br>
+            {% endfor %}
+          </div>
+
+          <br>
+
           <div class="recipe_instructions">
-              {{ recipe.instructions }}
+              {% if recipe.instructions != None %}
+                {{ recipe.instructions }}
+              {% endif %}
           </div>
       </div>
 
@@ -28,9 +62,6 @@
   <hr>
 {% endfor %}
 
-</div>
-
-<div class="col-md-3">
 </div>
 
 {% endblock content %}

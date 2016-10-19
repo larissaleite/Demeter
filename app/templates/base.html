@@ -32,12 +32,21 @@
       font-family: 'Roboto Slab', serif;
     }
 
-    .recipe_img > img {
-        width:70%;
+    .recipe_title {
+        font-weight:bold;
+    }
+
+    .recipe_img {
+        vertical-align: middle;
     }
 
     .recipe_instructions {
-        font-size:10px;
+        font-size:10.5px;
+        font-weight:100;
+    }
+
+    .profile-avatar {
+        width: 15%;
     }
 
     </style>
@@ -59,6 +68,20 @@
                 </div>
 
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    {% if current_user.is_authenticated %}
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="" class="dropdown-toggle" data-toggle="dropdown">
+                                <img class="img-circle profile-avatar" src="https://graph.facebook.com/{{ current_user.fb_id }}/picture">
+                                {{ current_user.first_name }} {{ current_user.last_name }} </h4><span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="/home">Home</a></li>
+                                <li><a href="/profile">Profile<a></li>
+                                <li><a href="/logout">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                {% endif %}
 
                 </div><!-- /.navbar-collapse -->
             </div><!-- /.container-fluid -->
