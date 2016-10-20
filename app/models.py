@@ -21,7 +21,7 @@ class Review(EmbeddedDocument):
 	recipe = ReferenceField('Recipe')
 	date = DateTimeField(default=datetime.datetime.now, required=True)
 
-class Rating(EmbeddedDocument):
+class Rating(Document):
 	user = ReferenceField('User')
 	recipe = ReferenceField('Recipe')
 	rate = IntField(required=True)
@@ -35,6 +35,7 @@ class Recipe(Document):
 	vegan = BooleanField(required=True)
 	glutenFree = BooleanField(required=True)
 	dairyFree = BooleanField(required=True)
+	reviews = ListField(EmbeddedDocumentField('Review'))
 
 class User(Document, UserMixin):
 	first_name = StringField(max_length=255, required=True)

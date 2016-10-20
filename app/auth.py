@@ -40,11 +40,12 @@ def facebook_authorized():
         )
     if isinstance(resp, OAuthException):
         return 'Access denied: %s' % resp.message
+
     me = facebook.get('/me', token=(resp['access_token'], ''))
     user = User.objects(fb_id=me.data['id']).first()
+
     if user and user.fb_token != resp['access_token']:
-        user.fb_token = resp['access_token']
-        user.save()
+        user.update(fb_token=resp['access_token'])
     if not user:
         name_split = me.data['name'].split()
         first_name = name_split[0]
@@ -55,9 +56,8 @@ def facebook_authorized():
             last_name=last_name,
             fb_token=resp['access_token']
         )
-    user.save()
+        user.save()
     login_user(user)
-        #return redirect('/profile')
     return redirect("/profile")
 
 @facebook.tokengetter
