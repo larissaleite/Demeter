@@ -37,6 +37,18 @@
               {% else %}
                 <i class="fa fa-ban" aria-hidden="true"></i> Dairy
               {% endif %}
+
+              {% if recipe.fatFree %}
+                <i class="fa fa-check" aria-hidden="true"></i> Fat
+              {% else %}
+                <i class="fa fa-ban" aria-hidden="true"></i> Fat
+              {% endif %}
+
+              {% if recipe.peanutFree %}
+                <i class="fa fa-check" aria-hidden="true"></i> Peanut
+              {% else %}
+                <i class="fa fa-ban" aria-hidden="true"></i> Peanut
+              {% endif %}
           </div>
 
           <br>

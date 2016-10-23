@@ -2,16 +2,13 @@ import datetime
 from flask_login import UserMixin
 from mongoengine import *
 
-class Category(EmbeddedDocument):
-	category = StringField(max_length=100, required=True)
-
 class Ingredient(EmbeddedDocument):
 	name = StringField(max_length=255, required=True)
-	category = ReferenceField('Category')
 	meta = {'allow_inheritance': True}
 
 #not necessary to inherit EmbeddedDocument again since Ingredient already does
 class ExtendedIngredient(Ingredient):
+	full_text = StringField(max_length=500)
 	amount = IntField(required=True)
 	unit = StringField(max_length=25, required=True)
 
@@ -31,10 +28,13 @@ class Recipe(Document):
 	ingredients = ListField(EmbeddedDocumentField('ExtendedIngredient'))
 	image = StringField(max_length=100)
 	instructions = StringField(max_length=500)
-	vegetarian = BooleanField(required=True)
-	vegan = BooleanField(required=True)
-	glutenFree = BooleanField(required=True)
-	dairyFree = BooleanField(required=True)
+	vegetarian = BooleanField()
+	vegan = BooleanField()
+	glutenFree = BooleanField()
+	dairyFree = BooleanField()
+	fatFree = BooleanField()
+	peanutFree = BooleanField()
+	calories = FloatField()
 	reviews = ListField(EmbeddedDocumentField('Review'))
 
 class User(Document, UserMixin):

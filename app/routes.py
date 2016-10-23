@@ -6,18 +6,6 @@ from flask_login import login_user, current_user, login_required
 from app.models import *
 from datetime import datetime
 
-import requests
-import logging
-
-#check error Broken Pipe with requests lib
-logging.getLogger('requests').setLevel(logging.CRITICAL)
-
-
-headers = {
-	"X-Mashape-Key": "62t27Bg1q7mshtmPnpbNVMOAVw9Tp1PkKrqjsnebv8Ph00q2x3",
-	"Accept": "application/json"
-}
-
 @app.route('/', methods = ['GET'])
 def index():
 	if current_user.is_authenticated:
@@ -51,17 +39,17 @@ def register():
 @app.route('/home', methods=['GET'])
 @login_required
 def home():
-	response = requests.get("https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/random?limitLicense=false&number=5", headers=headers)
-	data = response.json()
+
+	all_recipes = Recipe.objects[:10]
 
 	recipes = []
 
-	for recipe in data['recipes']:
+	for recipe in all_recipes:
 		ingredients = []
 
-		for ingredient in recipe['extendedIngredients']:
+		for ingredient in recipe['ingredients']:
 			ingredients.append({
-				'text' : str(ingredient['amount']) + " " + ingredient['unit'] + " of " + ingredient['name']
+				'text' : ingredient['full_text']
 			})
 
 		recipes.append({
@@ -71,6 +59,9 @@ def home():
 			'vegetarian' : recipe['vegetarian'],
 			'glutenFree' : recipe['glutenFree'],
 			'dairyFree' : recipe['dairyFree'],
+			'fatFree' : recipe['fatFree'],
+			'peanutFree' : recipe['peanutFree'],
+			'calories' : recipe['calories'],
 			'ingredients' : ingredients
 		})
 
