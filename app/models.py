@@ -46,7 +46,7 @@ class User(Document, UserMixin):
 	gender = BinaryField()
 	email = StringField(max_length=255)
 	location = StringField(max_length=255)
-	location_place = StringField(max_length=255)
+	coordinates = StringField(max_length=255)
 	preferred_ingredients = ListField(EmbeddedDocumentField('Ingredient'))
 	allergies = ListField(EmbeddedDocumentField('Ingredient'))
 	favorite_recipes = ListField(ReferenceField('Recipe'))

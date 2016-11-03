@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="col-md-1">
+</div>
+
+<div class="col-md-11">
+  <div class="row">
+
+      <div class="col-md-4 img_box">
+          <div class="recipe_img thumbnail">
+              <img src="{{ recipe.img }}">
+          </div>
+      </div>
+
+      <div class="col-md-8">
+          <div class="recipe_title">
+              <h4>{{ recipe.title }}</h4>
+          </div>
+
+          <div class="recipe_characteristics">
+              {% if recipe.vegetarian %}
+                <i class="fa fa-check" aria-hidden="true"></i> Vegetarian
+              {% else %}
+                <i class="fa fa-ban" aria-hidden="true"></i> Vegetarian
+              {% endif %}
+
+              {% if recipe.glutenFree %}
+                <i class="fa fa-check" aria-hidden="true"></i> Gluten
+              {% else %}
+                <i class="fa fa-ban" aria-hidden="true"></i> Gluten
+              {% endif %}
+
+              {% if recipe.dairyFree %}
+                <i class="fa fa-check" aria-hidden="true"></i> Dairy
+              {% else %}
+                <i class="fa fa-ban" aria-hidden="true"></i> Dairy
+              {% endif %}
+
+              {% if recipe.fatFree %}
+                <i class="fa fa-check" aria-hidden="true"></i> Fat
+              {% else %}
+                <i class="fa fa-ban" aria-hidden="true"></i> Fat
+              {% endif %}
+
+              {% if recipe.peanutFree %}
+                <i class="fa fa-check" aria-hidden="true"></i> Peanut
+              {% else %}
+                <i class="fa fa-ban" aria-hidden="true"></i> Peanut
+              {% endif %}
+          </div>
+
+          <br>
+
+          <div class="recipe_ingredients">
+            <p>Ingredients</p>
+            {% for ingredient in recipe.ingredients %}
+                <i class="fa fa-cutlery" aria-hidden="true"></i> {{ ingredient.text }}
+                <br>
+            {% endfor %}
+          </div>
+
+          <br>
+
+          <div class="recipe_instructions">
+              {% if recipe.instructions != None %}
+                {{ recipe.instructions }}
+              {% endif %}
+          </div>
+
+          <button class="btn btn-default"><i class="fa fa-heart" aria-hidden="true"></i> Favorite</button>
+      </div>
+
+  </div>
+
+      <br>
+
+      <div class="row">
+        <div class="col-xs-12">
+            <h4>Similar recipes</h4>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="thumbnail">
+                    <img src="{{ similar_recipes[0].img  }}" alt="...">
+                    <div class="caption">
+                      <p><a href="/recipe/{{ similar_recipes[0].id }}">{{ similar_recipes[0].title }}</a></p>
+                      <div class="recipe_characteristics">
+                          {% if similar_recipes[0].vegetarian %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Vegetarian
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Vegetarian
+                          {% endif %}
+
+                          {% if similar_recipes[0].glutenFree %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Gluten
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Gluten
+                          {% endif %}
+
+                          {% if similar_recipes[0].dairyFree %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Dairy
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Dairy
+                          {% endif %}
+
+                          {% if similar_recipes[0].fatFree %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Fat
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Fat
+                          {% endif %}
+
+                          {% if similar_recipes[0].peanutFree %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Peanut
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Peanut
+                          {% endif %}
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="thumbnail">
+                    <img src="{{ similar_recipes[1].img  }}" alt="...">
+                    <div class="caption">
+                      <p><a href="/recipe/{{ similar_recipes[1].id }}">{{ similar_recipes[1].title }}</a></p>
+                      <div class="recipe_characteristics">
+                          {% if similar_recipes[1].vegetarian %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Vegetarian
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Vegetarian
+                          {% endif %}
+
+                          {% if similar_recipes[1].glutenFree %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Gluten
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Gluten
+                          {% endif %}
+
+                          {% if similar_recipes[1].dairyFree %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Dairy
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Dairy
+                          {% endif %}
+
+                          {% if similar_recipes[1].fatFree %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Fat
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Fat
+                          {% endif %}
+
+                          {% if similar_recipes[1].peanutFree %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Peanut
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Peanut
+                          {% endif %}
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="thumbnail">
+                    <img src="{{ similar_recipes[2].img  }}" alt="...">
+                    <div class="caption">
+                      <p><a href="/recipe/{{ similar_recipes[2].id }}">{{ similar_recipes[2].title }}</a></p>
+                      <div class="recipe_characteristics">
+                          {% if similar_recipes[2].vegetarian %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Vegetarian
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Vegetarian
+                          {% endif %}
+
+                          {% if similar_recipes[2].glutenFree %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Gluten
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Gluten
+                          {% endif %}
+
+                          {% if similar_recipes[2].dairyFree %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Dairy
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Dairy
+                          {% endif %}
+
+                          {% if similar_recipes[2].fatFree %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Fat
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Fat
+                          {% endif %}
+
+                          {% if similar_recipes[2].peanutFree %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Peanut
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Peanut
+                          {% endif %}
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="thumbnail">
+                    <img src="{{ similar_recipes[3].img  }}" alt="...">
+                    <div class="caption">
+                      <p><a href="/recipe/{{ similar_recipes[3].id }}">{{ similar_recipes[3].title }}</a></p>
+                      <div class="recipe_characteristics">
+                          {% if similar_recipes[3].vegetarian %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Vegetarian
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Vegetarian
+                          {% endif %}
+
+                          {% if similar_recipes[3].glutenFree %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Gluten
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Gluten
+                          {% endif %}
+
+                          {% if similar_recipes[3].dairyFree %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Dairy
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Dairy
+                          {% endif %}
+
+                          {% if similar_recipes[3].fatFree %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Fat
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Fat
+                          {% endif %}
+
+                          {% if similar_recipes[3].peanutFree %}
+                            <i class="fa fa-check" aria-hidden="true"></i> Peanut
+                          {% else %}
+                            <i class="fa fa-ban" aria-hidden="true"></i> Peanut
+                          {% endif %}
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+        </div>
+      </div>
+
+  </div>
+
+
+{% endblock content %}

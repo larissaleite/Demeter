@@ -10,58 +10,65 @@
 
     <div class="row">
         <form name="profileForm" novalidate>
-          <div class="col-xs-6">
-            <div class="form-group">
-              <label>Age</label>
-              <select class="form-control" name="age" ng-model="age" ng-options="age for age in ages">
-              </select>
+            <div class="col-xs-6">
+                <div class="form-group">
+                    <label>Age</label>
+                    <select class="form-control" name="age" ng-model="age" ng-options="age for age in ages">
+                    </select>
+                </div>
             </div>
-          </div>
 
-          <div class="col-xs-6">
-            <label>Gender</label>
-            <select class="form-control" name="gender" ng-model="gender" ng-options="gender for gender in genders" required>
-            </select>
-          </div>
+            <div class="col-xs-6">
+                <label>Gender</label>
+                <select class="form-control" name="gender" ng-model="gender" ng-options="gender for gender in genders" required>
+                </select>
+            </div>
 
         </div>
 
         <div class="row">
 
             <div class="col-xs-12">
-            <label>Preferred Ingredients</label>
-        <!--    <multiple-autocomplete ng-model="ingredientsSelected" suggestions-arr="ingredients"></multiple-autocomplete>-->
-        <oi-select
-    oi-options="item for item in ingredients"
-    ng-model="ingredientsSelected"
-    multiple
-    placeholder="Select"
-    ></oi-select>
-          </div>
+                <label>Preferred Ingredients</label>
+                <oi-select
+                oi-options="item for item in ingredients"
+                ng-model="ingredientsSelected"
+                multiple
+                placeholder="Select"
+                ></oi-select>
+            </div>
 
-          <br>
+            <br>
 
 
-          <div class="col-xs-12">
-          <label>Ingredients Restrictions</label>
-      <oi-select
-  oi-options="item for item in ingredients"
-  ng-model="restrictionsSelected"
-  multiple
-  placeholder="Select"
-  ></oi-select>
-  </div>
-          <br>
+            <div class="col-xs-12">
+                <label>Ingredients Restrictions</label>
+                <oi-select
+                oi-options="item for item in ingredients"
+                ng-model="restrictionsSelected"
+                multiple
+                placeholder="Select"
+                ></oi-select>
+            </div>
+            <br>
 
-              <div class="col-xs-12">
-                <google-places location=location></google-places>
-              </div>
+            <div class="col-xs-12">
+                <div ng-show="userLocation == null">
+                    <google-places location=location></google-places>
+                </div>
+                <div ng-hide="userLocation == null">
+                    <label>Location</label>
+                    <p>{[userLocation]}</p>
+                    <a ng-click="changeLocation()"><i class="fa fa-edit" aria-hidden="true"></i> Edit</a>
+                </div>
+            </div>
 
-              <div class="col-xs-12">
-                  <div class="location-map" map-lazy-load="https://maps.google.com/maps/api/js">
-      <ng-map center="{[coordinates]}"></ng-map>
-    </div>
-              </div>
+            <!--
+            <div class="col-xs-12">
+                <div class="location-map">
+                    <ng-map center="{[location]}"></ng-map>
+                </div>
+            </div>-->
 
         </div>
 
