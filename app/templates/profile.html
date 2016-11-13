@@ -40,7 +40,6 @@
 
             <br>
 
-
             <div class="col-xs-12">
                 <label>Ingredients Restrictions</label>
                 <oi-select
@@ -50,6 +49,19 @@
                 placeholder="Select"
                 ></oi-select>
             </div>
+
+            <br>
+
+            <div class="col-xs-12">
+                <label>Diet Labels</label>
+                <oi-select
+                oi-options="item for item in labels"
+                ng-model="labelsSelected"
+                multiple
+                placeholder="Select"
+                ></oi-select>
+            </div>
+
             <br>
 
             <div class="col-xs-12">

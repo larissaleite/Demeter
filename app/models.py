@@ -49,4 +49,5 @@ class User(Document, UserMixin):
 	coordinates = StringField(max_length=255)
 	preferred_ingredients = ListField(EmbeddedDocumentField('Ingredient'))
 	allergies = ListField(EmbeddedDocumentField('Ingredient'))
+	diet_labels = ListField(StringField(max_length=50))
 	favorite_recipes = ListField(ReferenceField('Recipe'))

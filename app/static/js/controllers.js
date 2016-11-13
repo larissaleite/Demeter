@@ -1,4 +1,4 @@
-angular.module('demeter', ['oi.select', 'ngSanitize', 'ngMap'])
+angular.module('demeter', ['oi.select', 'ngSanitize'])
 
 .config(['$interpolateProvider', function($interpolateProvider) {
     $interpolateProvider.startSymbol('{[');
@@ -27,8 +27,11 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'ngMap'])
 
     $scope.genders = ['F', 'M'];
 
+    $scope.labels = ['Vegetarian', 'Gluten Free', 'Lactose Free']
+
     $scope.ingredientsSelected;
     $scope.restrictionsSelected;
+    $scope.labelsSelected;
 
     $scope.age = $scope.ages[0];
 
@@ -76,6 +79,13 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'ngMap'])
                         $scope.restrictionsSelected.push(user.restrictions[i].name);
                     }
                 }
+
+                if (user.diet_labels != undefined) {
+                    $scope.labelsSelected = [];
+                    for (var i=0; i< user.diet_labels.length; i++) {
+                        $scope.labelsSelected.push(user.diet_labels[i]);
+                    }
+                }
             });
         }
     }
@@ -101,6 +111,7 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'ngMap'])
 
         var ingredients = $scope.ingredientsSelected;
         var restrictions = $scope.restrictionsSelected;
+        var diet_labels = $scope.labelsSelected;
 
         var user_profile = {
             location: location,
@@ -108,7 +119,8 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'ngMap'])
             age: age,
             gender: gender,
             ingredients: ingredients,
-            restrictions: restrictions
+            restrictions: restrictions,
+            diet_labels: diet_labels
         }
 
         $http.post('/register', user_profile)
@@ -118,6 +130,22 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'ngMap'])
 
     }
 
+}])
+
+.controller('RecipeCtrl', ['$scope', '$http', function($scope, $http) {
+
+    $scope.favorite = function(recipe_id) {
+        //console.log(recipe_id)
+        var data = {
+            recipe_id : recipe_id
+        }
+
+        $http.post('/favorite', data)
+        .success(function(response) {
+            console.log(response)
+            console.log("favorited!")
+        });
+    }
 }])
 
 .directive('googlePlaces', function(){

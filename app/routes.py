@@ -28,6 +28,7 @@ def register():
 	coordinates = request.json['coordinates']
 	restrictions = request.json['restrictions']
 	ingredients = request.json['ingredients']
+	diet_labels = request.json['diet_labels']
 
 	preferred_ingredients = []
 	ingredient_restrictions = []
@@ -52,7 +53,8 @@ def register():
 		'set__location' : location,
 		'set__coordinates' : coordinates,
 		'set__preferred_ingredients':preferred_ingredients,
-		'set__allergies':ingredient_restrictions
+		'set__allergies':ingredient_restrictions,
+		'set__diet_labels':diet_labels
 	})
 
 	return home()
@@ -103,6 +105,7 @@ def get_recipe(recipe_id):
 		})
 
 	recipe = {
+		'id' : recipe_id,
 		'title' : recipe['title'],
 		'img' : recipe['image'],
 		'instructions' : recipe['instructions'],
@@ -136,6 +139,18 @@ def get_recipe(recipe_id):
 
 	return render_template("recipe.html", recipe=recipe, similar_recipes=similar_recipes)
 
+@app.route('/favorite', methods=['POST'])
+@login_required
+def favorite_recipe():
+	recipe_id = request.json['recipe_id']
+
+	user = User.objects.filter(id=current_user.id).first()
+	recipe = Recipe.objects.filter(id=str(recipe_id)).first()
+
+	user.update(add_to_set__favorite_recipes=recipe)
+
+	return "Recipe added to favorites"
+
 @app.route('/api/user', methods=['GET'])
 def get_user():
 	user = User.objects.filter(id=current_user.id).first()
@@ -146,7 +161,8 @@ def get_user():
 		'location' : user.location,
 		'coordinates' : user.coordinates,
 		'ingredients' : user.preferred_ingredients,
-		'restrictions' : user.allergies
+		'restrictions' : user.allergies,
+		'diet_labels' : user.diet_labels
 	}
 
 	return jsonify(user=user)

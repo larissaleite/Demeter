@@ -4,7 +4,7 @@
 <div class="col-md-1">
 </div>
 
-<div class="col-md-11">
+<div class="col-md-11" ng-controller="RecipeCtrl">
   <div class="row">
 
       <div class="col-md-4 img_box">
@@ -68,7 +68,7 @@
               {% endif %}
           </div>
 
-          <button class="btn btn-default"><i class="fa fa-heart" aria-hidden="true"></i> Favorite</button>
+          <button class="btn btn-default" ng-click="favorite('{{ recipe.id }}')"><i class="fa fa-heart" aria-hidden="true"></i> Favorite</button>
       </div>
 
   </div>
