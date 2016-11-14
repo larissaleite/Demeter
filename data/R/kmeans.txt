@@ -1,0 +1,61 @@
+# load dataset
+
+recipes <- read.csv('<PATH>/Demeter/data/recipes.csv', header=TRUE, sep=",")
+
+# binarizing the categorical variables
+
+recipes$vegan <- ifelse( recipes$vegan == "True", "1","0")
+recipes$vegetarian <- ifelse( recipes$vegetarian == "True", "1","0")
+recipes$glutenFree <- ifelse( recipes$glutenFree == "True", "1","0")
+recipes$dairyFree <- ifelse( recipes$dairyFree == "True", "1","0")
+recipes$peanutFree <- ifelse( recipes$peanutFree == "True", "1","0")
+recipes$fatFree <- ifelse( recipes$fatFree == "True", "1","0")
+
+
+recipes$vegan <- factor(recipes$vegan)
+recipes$vegetarian <- factor(recipes$vegetarian)
+recipes$glutenFree <- factor(recipes$glutenFree)
+recipes$dairyFree <- factor(recipes$dairyFree)
+recipes$peanutFree <- factor(recipes$peanutFree)
+recipes$fatFree <- factor(recipes$fatFree)
+
+summary(recipes)
+
+# calories from 8 to 80000
+# remove outliers and create calorie range?
+
+# normalizing
+recipes$calories <- scale(recipes$calories)
+
+
+#delete column or variable
+
+recipes$fatFree <- NULL
+
+km <- kmeans(recipes[,-1], centers=10)
+
+plot(km$cluster)
+
+
+
+# QUESTIONS:
+# how many recipes are in each cluster?
+# which features were more important when creating the clusters?
+# which is the best value for k? between 5 and 15?
+# how to draw the plot with the recipes in the different clusters?
+
+
+
+# to see recipes in one specific cluster with much less recipes than the other, for example:
+
+recipes_cluster_6 <- recipes[km$cluster == 6,]
+
+# see if it is not outlier. if it is, remove:
+
+# mongo
+
+# use demeter
+
+# db.recipe.remove({ "title" : "FISH CAKES TOPPED WITH CELERY RELISH & MAYONNAISE" } )
+
+# cluster with 4 recipes -> more caloric ones, all dairy free and peanut free
