@@ -5,298 +5,298 @@
 </div>
 
 <div class="col-md-11" ng-controller="RecipeCtrl" ng-init="init('{{ recipe.id }}','{{ current_user.id }}', '{{ user_data.is_favorite_recipe }}', '{{ user_data.rating }}')">
-  <div class="row">
+    <div class="row">
 
-      <div class="col-md-4 img_box">
-          <div class="recipe_img thumbnail">
-              <img src="{{ recipe.img }}">
-          </div>
-      </div>
+        <div class="col-md-4 img_box">
+            <div class="recipe_img thumbnail">
+                <img src="{{ recipe.img }}">
+            </div>
+        </div>
 
-      <div class="col-md-8">
-          <div class="recipe_title">
-              <h4>{{ recipe.title }}</h4>
-          </div>
+        <div class="col-md-8">
+            <div class="recipe_title">
+                <h4>{{ recipe.title }}</h4>
+            </div>
 
-          <div class="recipe_characteristics">
-              {% if recipe.vegetarian %}
+            <div class="recipe_characteristics">
+                {% if recipe.vegetarian %}
                 <i class="fa fa-check" aria-hidden="true"></i> Vegetarian
-              {% else %}
+                {% else %}
                 <i class="fa fa-ban" aria-hidden="true"></i> Vegetarian
-              {% endif %}
+                {% endif %}
 
-              {% if recipe.glutenFree %}
+                {% if recipe.glutenFree %}
                 <i class="fa fa-check" aria-hidden="true"></i> Gluten
-              {% else %}
+                {% else %}
                 <i class="fa fa-ban" aria-hidden="true"></i> Gluten
-              {% endif %}
+                {% endif %}
 
-              {% if recipe.dairyFree %}
+                {% if recipe.dairyFree %}
                 <i class="fa fa-check" aria-hidden="true"></i> Dairy
-              {% else %}
+                {% else %}
                 <i class="fa fa-ban" aria-hidden="true"></i> Dairy
-              {% endif %}
+                {% endif %}
 
-              {% if recipe.fatFree %}
+                {% if recipe.fatFree %}
                 <i class="fa fa-check" aria-hidden="true"></i> Fat
-              {% else %}
+                {% else %}
                 <i class="fa fa-ban" aria-hidden="true"></i> Fat
-              {% endif %}
+                {% endif %}
 
-              {% if recipe.peanutFree %}
+                {% if recipe.peanutFree %}
                 <i class="fa fa-check" aria-hidden="true"></i> Peanut
-              {% else %}
+                {% else %}
                 <i class="fa fa-ban" aria-hidden="true"></i> Peanut
-              {% endif %}
-          </div>
+                {% endif %}
+            </div>
 
-          <br>
+            <br>
 
-          <div class="recipe_ingredients">
-            <p>Ingredients</p>
-            {% for ingredient in recipe.ingredients %}
+            <div class="recipe_ingredients">
+                <p>Ingredients</p>
+                {% for ingredient in recipe.ingredients %}
                 <i class="fa fa-cutlery" aria-hidden="true"></i> {{ ingredient.text }}
                 <br>
-            {% endfor %}
-          </div>
-
-          <br>
-
-          <div class="recipe_instructions">
-              {% if recipe.instructions != None %}
-                {{ recipe.instructions }}
-              {% endif %}
-          </div>
-
-          <div class="row">
-              <div class="col-xs-2">
-                  <button class="btn btn-danger" ng-show="isFavoriteRecipe" ng-click="unfavorite('{{ recipe.id }}')"><i class="fa fa-heart" aria-hidden="true"></i> Favorited</button>
-          <button ng-show="!isFavoriteRecipe" class="btn btn-default" ng-click="favorite('{{ recipe.id }}')"><i class="fa fa-heart" aria-hidden="true"></i> Favorite</button>
-      </div>
-      <div class="col-xs-10">
-          <div layout="column">
-              <jk-rating-stars rating="rating" on-rating="onRating(rating)"></jk-rating-stars>
+                {% endfor %}
             </div>
+
+            <br>
+
+            <div class="recipe_instructions">
+                {% if recipe.instructions != None %}
+                {{ recipe.instructions }}
+                {% endif %}
+            </div>
+
+            <div class="row">
+                <div class="col-xs-2">
+                    <button class="btn btn-danger" ng-show="isFavoriteRecipe" ng-click="unfavorite('{{ recipe.id }}')"><i class="fa fa-heart" aria-hidden="true"></i> Favorited</button>
+                    <button ng-show="!isFavoriteRecipe" class="btn btn-default" ng-click="favorite('{{ recipe.id }}')"><i class="fa fa-heart" aria-hidden="true"></i> Favorite</button>
+                </div>
+                <div class="col-xs-10">
+                    <div layout="column">
+                        <jk-rating-stars rating="rating" on-rating="onRating(rating)"></jk-rating-stars>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <br>
+
+    <div class="row">
+        <div class="col-xs-12">
+
+            <h3>Comments / Reviews</h3>
+
+            <div class="reviews" ng-show="reviews.length > 0">
+
+                <!--<div dir-paginate="r in reviews | itemsPerPage: 2" current-page="currentPage">-->
+                <div ng-repeat="r in reviews">
+
+                    <hr>
+
+                    <img class="img-circle profile-avatar-comment pull-left" src="https://graph.facebook.com/{[r.user_fb_id]}/picture">
+                    <div class="comment-area">
+                        <div class="delete-comment pull-right" ng-show="r.user_id == user_id"><i class="fa fa-trash-o" ng-click="delete_comment(r)"></i></div>
+                        <p class="comment-description">{[ r.text ]}</p>
+                        <p class="comment-date">{[ r.date ]}</p>
+                    </div>
+                    <div style="clear:both"></div>
+
+                </div>
+
+                <!--<dir-pagination-controls boundary-links="true"></dir-pagination-controls>-->
+
+            </div><!-- .reviews -->
+
+            <div class="empty-comments" ng-show="reviews.length == 0">
+                <p class="comment-text">No reviews</p>
+            </div>
+
+            <div class="comment-area">
+                <textarea cols="15" rows="3" class="form-control" ng-model="review" ng-enter="comment()"></textarea>
+                <br>
+                <button class="btn btn-default" ng-click="comment()">Comment</button>
+            </div>
+
         </div>
     </div>
-      </div>
 
-  </div>
-
-<br>
-
-<div class="row">
-  <div class="col-xs-12">
-
-      <h3>Comments / Reviews</h3>
-
-        <div class="reviews" ng-show="reviews.length > 0">
-
-        <!--<div dir-paginate="r in reviews | itemsPerPage: 2" current-page="currentPage">-->
-        <div ng-repeat="r in reviews">
-
-          <hr>
-
-            <img class="img-circle profile-avatar-comment pull-left" src="https://graph.facebook.com/{[r.user_fb_id]}/picture">
-            <div class="comment-area">
-              <div class="delete-comment pull-right" ng-show="r.user_id == user_id"><i class="fa fa-trash-o" ng-click="delete_comment(r)"></i></div>
-              <p class="comment-description">{[ r.text ]}</p>
-              <p class="comment-date">{[ r.date ]}</p>
-            </div>
-            <div style="clear:both"></div>
-
-        </div>
-
-        <!--<dir-pagination-controls boundary-links="true"></dir-pagination-controls>-->
-
-    </div><!-- .reviews -->
-
-        <div class="empty-comments" ng-show="reviews.length == 0">
-          <p class="comment-text">No reviews</p>
-        </div>
-
-        <div class="comment-area">
-          <textarea cols="15" rows="3" class="form-control" ng-model="review" ng-enter="comment()"></textarea>
-          <br>
-          <button class="btn btn-default" ng-click="comment()">Comment</button>
-        </div>
-
-  </div>
-</div>
-
-      <div class="row">
+    <div class="row">
         <div class="col-xs-12">
             <h4>Similar recipes</h4>
             <div class="row">
                 <div class="col-md-3">
                     <div class="thumbnail">
-                    <img src="{{ similar_recipes[0].img  }}" alt="...">
-                    <div class="caption">
-                      <p><a href="/recipe/{{ similar_recipes[0].id }}">{{ similar_recipes[0].title }}</a></p>
-                      <div class="recipe_characteristics">
-                          {% if similar_recipes[0].vegetarian %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Vegetarian
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Vegetarian
-                          {% endif %}
+                        <img src="{{ similar_recipes[0].img  }}" alt="...">
+                        <div class="caption">
+                            <p><a href="/recipe/{{ similar_recipes[0].id }}">{{ similar_recipes[0].title }}</a></p>
+                            <div class="recipe_characteristics">
+                                {% if similar_recipes[0].vegetarian %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Vegetarian
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Vegetarian
+                                {% endif %}
 
-                          {% if similar_recipes[0].glutenFree %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Gluten
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Gluten
-                          {% endif %}
+                                {% if similar_recipes[0].glutenFree %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Gluten
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Gluten
+                                {% endif %}
 
-                          {% if similar_recipes[0].dairyFree %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Dairy
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Dairy
-                          {% endif %}
+                                {% if similar_recipes[0].dairyFree %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Dairy
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Dairy
+                                {% endif %}
 
-                          {% if similar_recipes[0].fatFree %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Fat
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Fat
-                          {% endif %}
+                                {% if similar_recipes[0].fatFree %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Fat
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Fat
+                                {% endif %}
 
-                          {% if similar_recipes[0].peanutFree %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Peanut
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Peanut
-                          {% endif %}
-                      </div>
+                                {% if similar_recipes[0].peanutFree %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Peanut
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Peanut
+                                {% endif %}
+                            </div>
 
+                        </div>
                     </div>
-                  </div>
                 </div>
 
                 <div class="col-md-3">
                     <div class="thumbnail">
-                    <img src="{{ similar_recipes[1].img  }}" alt="...">
-                    <div class="caption">
-                      <p><a href="/recipe/{{ similar_recipes[1].id }}">{{ similar_recipes[1].title }}</a></p>
-                      <div class="recipe_characteristics">
-                          {% if similar_recipes[1].vegetarian %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Vegetarian
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Vegetarian
-                          {% endif %}
+                        <img src="{{ similar_recipes[1].img  }}" alt="...">
+                        <div class="caption">
+                            <p><a href="/recipe/{{ similar_recipes[1].id }}">{{ similar_recipes[1].title }}</a></p>
+                            <div class="recipe_characteristics">
+                                {% if similar_recipes[1].vegetarian %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Vegetarian
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Vegetarian
+                                {% endif %}
 
-                          {% if similar_recipes[1].glutenFree %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Gluten
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Gluten
-                          {% endif %}
+                                {% if similar_recipes[1].glutenFree %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Gluten
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Gluten
+                                {% endif %}
 
-                          {% if similar_recipes[1].dairyFree %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Dairy
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Dairy
-                          {% endif %}
+                                {% if similar_recipes[1].dairyFree %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Dairy
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Dairy
+                                {% endif %}
 
-                          {% if similar_recipes[1].fatFree %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Fat
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Fat
-                          {% endif %}
+                                {% if similar_recipes[1].fatFree %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Fat
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Fat
+                                {% endif %}
 
-                          {% if similar_recipes[1].peanutFree %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Peanut
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Peanut
-                          {% endif %}
-                      </div>
+                                {% if similar_recipes[1].peanutFree %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Peanut
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Peanut
+                                {% endif %}
+                            </div>
 
+                        </div>
                     </div>
-                  </div>
                 </div>
 
                 <div class="col-md-3">
                     <div class="thumbnail">
-                    <img src="{{ similar_recipes[2].img  }}" alt="...">
-                    <div class="caption">
-                      <p><a href="/recipe/{{ similar_recipes[2].id }}">{{ similar_recipes[2].title }}</a></p>
-                      <div class="recipe_characteristics">
-                          {% if similar_recipes[2].vegetarian %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Vegetarian
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Vegetarian
-                          {% endif %}
+                        <img src="{{ similar_recipes[2].img  }}" alt="...">
+                        <div class="caption">
+                            <p><a href="/recipe/{{ similar_recipes[2].id }}">{{ similar_recipes[2].title }}</a></p>
+                            <div class="recipe_characteristics">
+                                {% if similar_recipes[2].vegetarian %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Vegetarian
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Vegetarian
+                                {% endif %}
 
-                          {% if similar_recipes[2].glutenFree %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Gluten
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Gluten
-                          {% endif %}
+                                {% if similar_recipes[2].glutenFree %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Gluten
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Gluten
+                                {% endif %}
 
-                          {% if similar_recipes[2].dairyFree %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Dairy
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Dairy
-                          {% endif %}
+                                {% if similar_recipes[2].dairyFree %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Dairy
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Dairy
+                                {% endif %}
 
-                          {% if similar_recipes[2].fatFree %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Fat
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Fat
-                          {% endif %}
+                                {% if similar_recipes[2].fatFree %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Fat
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Fat
+                                {% endif %}
 
-                          {% if similar_recipes[2].peanutFree %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Peanut
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Peanut
-                          {% endif %}
-                      </div>
+                                {% if similar_recipes[2].peanutFree %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Peanut
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Peanut
+                                {% endif %}
+                            </div>
 
+                        </div>
                     </div>
-                  </div>
                 </div>
 
                 <div class="col-md-3">
                     <div class="thumbnail">
-                    <img src="{{ similar_recipes[3].img  }}" alt="...">
-                    <div class="caption">
-                      <p><a href="/recipe/{{ similar_recipes[3].id }}">{{ similar_recipes[3].title }}</a></p>
-                      <div class="recipe_characteristics">
-                          {% if similar_recipes[3].vegetarian %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Vegetarian
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Vegetarian
-                          {% endif %}
+                        <img src="{{ similar_recipes[3].img  }}" alt="...">
+                        <div class="caption">
+                            <p><a href="/recipe/{{ similar_recipes[3].id }}">{{ similar_recipes[3].title }}</a></p>
+                            <div class="recipe_characteristics">
+                                {% if similar_recipes[3].vegetarian %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Vegetarian
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Vegetarian
+                                {% endif %}
 
-                          {% if similar_recipes[3].glutenFree %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Gluten
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Gluten
-                          {% endif %}
+                                {% if similar_recipes[3].glutenFree %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Gluten
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Gluten
+                                {% endif %}
 
-                          {% if similar_recipes[3].dairyFree %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Dairy
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Dairy
-                          {% endif %}
+                                {% if similar_recipes[3].dairyFree %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Dairy
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Dairy
+                                {% endif %}
 
-                          {% if similar_recipes[3].fatFree %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Fat
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Fat
-                          {% endif %}
+                                {% if similar_recipes[3].fatFree %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Fat
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Fat
+                                {% endif %}
 
-                          {% if similar_recipes[3].peanutFree %}
-                            <i class="fa fa-check" aria-hidden="true"></i> Peanut
-                          {% else %}
-                            <i class="fa fa-ban" aria-hidden="true"></i> Peanut
-                          {% endif %}
-                      </div>
+                                {% if similar_recipes[3].peanutFree %}
+                                <i class="fa fa-check" aria-hidden="true"></i> Peanut
+                                {% else %}
+                                <i class="fa fa-ban" aria-hidden="true"></i> Peanut
+                                {% endif %}
+                            </div>
 
+                        </div>
                     </div>
-                  </div>
                 </div>
             </div>
 
         </div>
-      </div>
+    </div>
 
-  </div>
+</div>
 
 
 {% endblock content %}

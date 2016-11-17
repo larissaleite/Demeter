@@ -198,6 +198,7 @@ def rate_recipe():
 		user_recipe_rate.update(set__rating=rating)
 
 	user_recipes_rating[str(recipe_id)] = rating
+	print user_recipes_rating
 
 	return "Rating added to recipes"
 
@@ -222,9 +223,9 @@ def unfavorite_recipe():
 	recipe_id = request.json['recipe_id']
 
 	user = User.objects.filter(id=current_user.id).first()
-	#recipe = Recipe.objects.filter(id=str(recipe_id)).first()
+	recipe = Recipe.objects.filter(id=str(recipe_id)).first()
 
-	user.update(pull__favorite_recipes__id=str(recipe_id))
+	user.update(pull__favorite_recipes=recipe)
 
 	user_favorite_recipes.remove(str(recipe_id))
 	print user_favorite_recipes

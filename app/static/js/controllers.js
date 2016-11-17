@@ -148,7 +148,11 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'angularUtils.directives.d
         $scope.recipe_id = recipe_id;
         $scope.user_id = user_id;
 
-        $scope.isFavoriteRecipe = isFavorite;
+        if (isFavorite == 'False')
+            $scope.isFavoriteRecipe = false;
+        else
+            $scope.isFavoriteRecipe = true;
+
         $scope.rating = rating;
 
         $http.get('/api/recipe/reviews', { params : { recipe_id: recipe_id } })
