@@ -1,7 +1,15 @@
-from app.models import *
 import os, glob, json
 
-for filename in glob.glob(os.getcwd()+'/data/*.json'):
+if __name__ == '__main__':
+	if __package__ is None:
+		import sys
+		from os import path
+		sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+		from app.models import *
+	else:
+		from ..app.models import *
+
+for filename in glob.glob(os.getcwd()+'/data/datasets/edamam/*.json'):
 	with open(filename) as json_data:
 		data = json.load(json_data)
 

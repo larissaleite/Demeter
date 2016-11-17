@@ -4,7 +4,7 @@
 <div class="col-md-1">
 </div>
 
-<div class="col-md-11" ng-controller="RecipeCtrl">
+<div class="col-md-11" ng-controller="RecipeCtrl" ng-init="init('{{ recipe.id }}','{{ current_user.id }}', '{{ user_data.is_favorite_recipe }}', '{{ user_data.rating }}')">
   <div class="row">
 
       <div class="col-md-4 img_box">
@@ -68,12 +68,61 @@
               {% endif %}
           </div>
 
-          <button class="btn btn-default" ng-click="favorite('{{ recipe.id }}')"><i class="fa fa-heart" aria-hidden="true"></i> Favorite</button>
+          <div class="row">
+              <div class="col-xs-2">
+                  <button class="btn btn-danger" ng-show="isFavoriteRecipe" ng-click="unfavorite('{{ recipe.id }}')"><i class="fa fa-heart" aria-hidden="true"></i> Favorited</button>
+          <button ng-show="!isFavoriteRecipe" class="btn btn-default" ng-click="favorite('{{ recipe.id }}')"><i class="fa fa-heart" aria-hidden="true"></i> Favorite</button>
+      </div>
+      <div class="col-xs-10">
+          <div layout="column">
+              <jk-rating-stars rating="rating" on-rating="onRating(rating)"></jk-rating-stars>
+            </div>
+        </div>
+    </div>
       </div>
 
   </div>
 
-      <br>
+<br>
+
+<div class="row">
+  <div class="col-xs-12">
+
+      <h3>Comments / Reviews</h3>
+
+        <div class="reviews" ng-show="reviews.length > 0">
+
+        <!--<div dir-paginate="r in reviews | itemsPerPage: 2" current-page="currentPage">-->
+        <div ng-repeat="r in reviews">
+
+          <hr>
+
+            <img class="img-circle profile-avatar-comment pull-left" src="https://graph.facebook.com/{[r.user_fb_id]}/picture">
+            <div class="comment-area">
+              <div class="delete-comment pull-right" ng-show="r.user_id == user_id"><i class="fa fa-trash-o" ng-click="delete_comment(r)"></i></div>
+              <p class="comment-description">{[ r.text ]}</p>
+              <p class="comment-date">{[ r.date ]}</p>
+            </div>
+            <div style="clear:both"></div>
+
+        </div>
+
+        <!--<dir-pagination-controls boundary-links="true"></dir-pagination-controls>-->
+
+    </div><!-- .reviews -->
+
+        <div class="empty-comments" ng-show="reviews.length == 0">
+          <p class="comment-text">No reviews</p>
+        </div>
+
+        <div class="comment-area">
+          <textarea cols="15" rows="3" class="form-control" ng-model="review" ng-enter="comment()"></textarea>
+          <br>
+          <button class="btn btn-default" ng-click="comment()">Comment</button>
+        </div>
+
+  </div>
+</div>
 
       <div class="row">
         <div class="col-xs-12">

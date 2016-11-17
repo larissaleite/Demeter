@@ -1,9 +1,13 @@
-angular.module('demeter', ['oi.select', 'ngSanitize'])
+angular.module('demeter', ['oi.select', 'ngSanitize', 'angularUtils.directives.dirPagination', 'jkAngularRatingStars'])
 
 .config(['$interpolateProvider', function($interpolateProvider) {
     $interpolateProvider.startSymbol('{[');
     $interpolateProvider.endSymbol(']}');
 }])
+
+.config(function(paginationTemplateProvider) {
+    paginationTemplateProvider.setPath('/template_pagination');
+})
 
 .controller('ProfileCtrl', ['$scope', '$http', '$q', function($scope, $http, $q) {
 
@@ -134,16 +138,93 @@ angular.module('demeter', ['oi.select', 'ngSanitize'])
 
 .controller('RecipeCtrl', ['$scope', '$http', function($scope, $http) {
 
-    $scope.favorite = function(recipe_id) {
-        //console.log(recipe_id)
+    $scope.rating = 0;
+
+    $scope.reviews = [];
+
+    $scope.isFavoriteRecipe;
+
+    $scope.init = function(recipe_id, user_id, isFavorite, rating) {
+        $scope.recipe_id = recipe_id;
+        $scope.user_id = user_id;
+
+        $scope.isFavoriteRecipe = isFavorite;
+        $scope.rating = rating;
+
+        $http.get('/api/recipe/reviews', { params : { recipe_id: recipe_id } })
+        .success(function(response) {
+            console.log(response.reviews)
+            $scope.reviews = response.reviews;
+        });
+    }
+
+    $scope.onRating = function(rating) {
+        console.log(rating)
+
         var data = {
-            recipe_id : recipe_id
+            recipe_id : $scope.recipe_id,
+            rating : rating
         }
 
-        $http.post('/favorite', data)
+        $http.post('/rating/new', data)
         .success(function(response) {
             console.log(response)
-            console.log("favorited!")
+        });
+    }
+
+    $scope.favorite = function() {
+        var data = {
+            recipe_id : $scope.recipe_id
+        }
+
+        $http.post('/favorite/new', data)
+        .success(function(response) {
+            console.log(response)
+            $scope.isFavoriteRecipe = true;
+        });
+    }
+
+    $scope.unfavorite = function() {
+        var data = {
+            recipe_id : $scope.recipe_id
+        }
+
+        $http.post('/favorite/delete', data)
+        .success(function(response) {
+            console.log(response)
+            $scope.isFavoriteRecipe = false;
+        });
+
+    }
+
+    $scope.comment = function() {
+        var review = $scope.review;
+
+        var data = {
+            recipe_id: $scope.recipe_id,
+            review: review
+        }
+
+        $http.post('/api/recipe/review/new', data)
+        .success(function(response) {
+            $scope.review = "";
+            console.log(response.reviews[0]);
+            $scope.reviews.push(response.reviews[0])
+        });
+    }
+
+    $scope.delete_comment = function(review) {
+
+        var data = {
+            recipe_id: $scope.recipe_id,
+            date: review.date,
+            review_id: review.id
+        }
+
+        $http.post('/api/recipe/review/delete', data)
+        .success(function(response) {
+            var index = $scope.reviews.indexOf(review);
+            $scope.reviews.splice(index, 1);
         });
     }
 }])

@@ -13,4 +13,8 @@ This project is part of the 3rd semester of the IT4BI Master's program at Univer
 ` python run.py `
 5. Enter `http://localhost:5000` on the web browser
 
-To load the dataset into MongoDB, just execute `python data-collector.py`
+To load the dataset into MongoDB, just execute:
+
+ `python data/data-collector-edamam.py`
+ `python data/data-collector-yummly.py`
+ `python data/data-collector-spoonacular.py`

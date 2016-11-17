@@ -9,10 +9,12 @@ class Ingredient(EmbeddedDocument):
 #not necessary to inherit EmbeddedDocument again since Ingredient already does
 class ExtendedIngredient(Ingredient):
 	full_text = StringField(max_length=500)
-	amount = IntField(required=True)
-	unit = StringField(max_length=25, required=True)
+	amount = IntField()
+	unit = StringField(max_length=25)
+	category = StringField(max_length=50) #just for spoonacular
 
 class Review(EmbeddedDocument):
+	id = StringField(max_length=500, required=True)
 	text = StringField(max_length=500, required=True)
 	user = ReferenceField('User')
 	recipe = ReferenceField('Recipe')
@@ -21,12 +23,12 @@ class Review(EmbeddedDocument):
 class Rating(Document):
 	user = ReferenceField('User')
 	recipe = ReferenceField('Recipe')
-	rate = IntField(required=True)
+	rating = IntField(required=True)
 
 class Recipe(Document):
 	title = StringField(max_length=255, required=True)
 	ingredients = ListField(EmbeddedDocumentField('ExtendedIngredient'))
-	image = StringField(max_length=100)
+	image = StringField(max_length=255)
 	instructions = StringField(max_length=500)
 	vegetarian = BooleanField()
 	vegan = BooleanField()
