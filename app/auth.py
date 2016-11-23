@@ -5,7 +5,7 @@ from flask_login import login_user, current_user, login_required, logout_user
 from app.redirects import get_redirect_target
 from app.models import User
 
-from app import app
+from app import app, dao
 
 oauth = OAuth()
 facebook = oauth.remote_app('facebook',
@@ -18,7 +18,6 @@ facebook = oauth.remote_app('facebook',
     authorize_url='https://www.facebook.com/dialog/oauth',
     request_token_params={'display': 'popup'}
 )
-
 
 @app.route('/login')
 def login():
@@ -42,21 +41,18 @@ def facebook_authorized():
         return 'Access denied: %s' % resp.message
 
     me = facebook.get('/me', token=(resp['access_token'], ''))
-    user = User.objects(fb_id=me.data['id']).first()
+
+    user = dao.get_user_by_fb(me.data['id'])
 
     if user and user.fb_token != resp['access_token']:
-        user.update(fb_token=resp['access_token'])
+        user = dao.update_user_fb_token(user, resp['access_token'])
     if not user:
         name_split = me.data['name'].split()
         first_name = name_split[0]
         last_name = name_split[1]
-        user = User(
-            fb_id=me.data['id'],
-            first_name=first_name,
-            last_name=last_name,
-            fb_token=resp['access_token']
-        )
-        user.save()
+
+        user = dao.create_user(me.data['id'], first_name, last_name, resp['access_token'])
+
     login_user(user)
     return redirect("/profile")
 

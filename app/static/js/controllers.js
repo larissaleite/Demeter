@@ -1,13 +1,9 @@
-angular.module('demeter', ['oi.select', 'ngSanitize', 'angularUtils.directives.dirPagination', 'jkAngularRatingStars'])
+angular.module('demeter', ['oi.select', 'ngSanitize', 'jkAngularRatingStars'])
 
 .config(['$interpolateProvider', function($interpolateProvider) {
     $interpolateProvider.startSymbol('{[');
     $interpolateProvider.endSymbol(']}');
 }])
-
-.config(function(paginationTemplateProvider) {
-    paginationTemplateProvider.setPath('/template_pagination');
-})
 
 .controller('ProfileCtrl', ['$scope', '$http', '$q', function($scope, $http, $q) {
 
@@ -48,7 +44,7 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'angularUtils.directives.d
         if (user_id != undefined) {
             $scope.user_id = user_id
 
-            $http.get('/api/user')
+            $http.get('/user')
             .success(function(response) {
                 var user = response.user;
 
@@ -100,7 +96,6 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'angularUtils.directives.d
 
     /* function called when the save button is clicked */
     $scope.register = function() {
-
         var age = $scope.age;
         var gender = $scope.gender;
 
@@ -111,6 +106,9 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'angularUtils.directives.d
         if (place != undefined) {
             location = place.formatted_address;
             coordinates = place.geometry.location.lat() + ',' + place.geometry.location.lng()
+        } else {
+            location = $scope.userLocation;
+            coordinates = $scope.coordinates;
         }
 
         var ingredients = $scope.ingredientsSelected;
@@ -127,7 +125,7 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'angularUtils.directives.d
             diet_labels: diet_labels
         }
 
-        $http.post('/register', user_profile)
+        $http.post('/profile', user_profile)
         .success(function(response) {
             window.location = '/home';
         });
@@ -155,7 +153,7 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'angularUtils.directives.d
 
         $scope.rating = rating;
 
-        $http.get('/api/recipe/reviews', { params : { recipe_id: recipe_id } })
+        $http.get('/recipe/reviews', { params : { recipe_id: recipe_id } })
         .success(function(response) {
             console.log(response.reviews)
             $scope.reviews = response.reviews;
@@ -209,7 +207,7 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'angularUtils.directives.d
             review: review
         }
 
-        $http.post('/api/recipe/review/new', data)
+        $http.post('/recipe/review/new', data)
         .success(function(response) {
             $scope.review = "";
             console.log(response.reviews[0]);
@@ -225,7 +223,7 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'angularUtils.directives.d
             review_id: review.id
         }
 
-        $http.post('/api/recipe/review/delete', data)
+        $http.post('/recipe/review/delete', data)
         .success(function(response) {
             var index = $scope.reviews.indexOf(review);
             $scope.reviews.splice(index, 1);
