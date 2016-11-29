@@ -1,3 +1,10 @@
+import os
+
+from pyspark import SparkContext, SparkConf
+
+conf = SparkConf().setAppName('demeter').setMaster("spark://Larissas-MacBook-Pro.local:7077")
+sc = SparkContext(conf=conf)
+
 from flask import Flask
 from flask_mongoengine import MongoEngine
 from flask_login import LoginManager, current_user
@@ -14,7 +21,7 @@ app.config.from_object('config')
 db = MongoEngine(app)
 
 dao = Dao()
-recommender = Recommender(dao)
+recommender = Recommender(dao, sc)
 
 user_favorite_recipes = []
 user_recipes_rating = dict()
