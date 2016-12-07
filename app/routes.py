@@ -30,7 +30,7 @@ def home():
 	if not user_recipes_rating:
 		user_recipes_rating = dao.get_user_ratings(current_user.id)
 
-	recommender.get_recommended_recipes()
+	recommender.get_recommended_recipes_for_user(2001)
 
 	return render_template("home.html", recipes=recipes)
 

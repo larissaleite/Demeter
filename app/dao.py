@@ -90,6 +90,9 @@ class Dao:
 		return user_favorite_recipes
 
 	# RATING
+	def get_all_ratings(self):
+		return Rating.objects()
+
 	def get_user_ratings(self, user_id):
 		user = User.objects.filter(id=str(user_id)).first()
 		ratings = Rating.objects.filter(user=user)
@@ -149,6 +152,7 @@ class Dao:
 		return recipe
 
 	def get_most_popular_recipes(self):
+		#still needs to be implemented
 		all_recipes = Recipe.objects[:10]
 
 		recipes = []

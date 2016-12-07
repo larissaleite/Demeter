@@ -2,8 +2,8 @@ import os, glob, json, random, csv
 
 ratings_csv = []
 
-for x in range(0,1000):
-    user_id = int(random.uniform(1,100))
+for x in range(0,50000):
+    user_id = int(random.uniform(1,1000))
     recipe_id = int(random.uniform(1,5000))
     rating = random.uniform(1.0, 5.0)
 
