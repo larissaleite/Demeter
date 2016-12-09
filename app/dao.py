@@ -23,7 +23,8 @@ class Dao:
 			'coordinates' : user.coordinates,
 			'ingredients' : user.preferred_ingredients,
 			'restrictions' : user.allergies,
-			'diet_labels' : user.diet_labels
+			'diet_labels' : user.diet_labels,
+			'favorite_recipes' : user.favorite_recipes
 		}
 
 		return user
@@ -151,9 +152,8 @@ class Dao:
 
 		return recipe
 
-	def get_most_popular_recipes(self):
-		#still needs to be implemented
-		all_recipes = Recipe.objects[:10]
+	def get_recipes_from_ids(self, recipes_ids):
+		all_recipes = Recipe.objects.filter(recipe_id__in=recipes_ids)
 
 		recipes = []
 
@@ -168,18 +168,16 @@ class Dao:
 			recipes.append({
 				'id' : recipe['id'],
 				'title' : recipe['title'],
-				'img' : recipe['image'],
-				'instructions' : recipe['instructions'],
 				'vegetarian' : recipe['vegetarian'],
 				'glutenFree' : recipe['glutenFree'],
 				'dairyFree' : recipe['dairyFree'],
-				'fatFree' : recipe['fatFree'],
-				'peanutFree' : recipe['peanutFree'],
-				'calories' : recipe['calories'],
 				'ingredients' : ingredients
 			})
 
 		return recipes
+
+	def get_all_recipes_ids_per_ingredient(self, ingredient):
+		return Recipe.objects(ingredients__name=ingredient).scalar("recipe_id")
 
 	def get_recipe_reviews(self, recipe_id):
 		recipe = Recipe.objects.filter(id=str(recipe_id)).first()
@@ -214,5 +212,13 @@ class Dao:
 		return Recipe.objects(id=str(recipe_id)).update(pull__reviews__id=str(review_id))
 
 	# INGREDIENTS
+	def get_ingredients_per_recipe_id(self, recipe_id):
+		ingredients = Recipe.objects.filter(recipe_id=recipe_id).only("ingredients").first().ingredients
+
+		ingredients_names = []
+		for ingredient in ingredients:
+			ingredients_names.append(ingredient.name)
+		return ingredients_names
+
 	def get_all_ingredients(self):
 		return Recipe.objects.distinct(field="ingredients.name")

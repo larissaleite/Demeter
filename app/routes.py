@@ -19,7 +19,8 @@ def index():
 @app.route('/home', methods=['GET'])
 @login_required
 def home():
-	recipes = dao.get_most_popular_recipes()
+	#recipes = dao.get_most_popular_recipes()
+	recipes = []
 
 	global user_favorite_recipes
 	global user_recipes_rating
@@ -30,7 +31,7 @@ def home():
 	if not user_recipes_rating:
 		user_recipes_rating = dao.get_user_ratings(current_user.id)
 
-	recommender.get_recommended_recipes_for_user(2001)
+	recommender.get_recommended_recipes_for_user(100)
 
 	return render_template("home.html", recipes=recipes)
 

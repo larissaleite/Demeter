@@ -26,6 +26,7 @@ class Rating(Document):
 	rating = IntField(required=True)
 
 class Recipe(Document):
+	recipe_id = SequenceField()
 	title = StringField(max_length=255, required=True)
 	ingredients = ListField(EmbeddedDocumentField('ExtendedIngredient'))
 	image = StringField(max_length=255)
