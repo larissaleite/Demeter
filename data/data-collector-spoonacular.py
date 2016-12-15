@@ -90,13 +90,13 @@ def insert_data_db():
 							instructions=instructions
 						)
 
-						if recipe["vegan"] == 'true':
+						if recipe_data["vegan"] == 'true':
 							recipe.vegan = True
-						if recipe["vegetarian"] == 'true':
+						if recipe_data["vegetarian"] == 'true':
 							recipe.vegetarian = True
-						if recipe["glutenFree"] == 'true':
+						if recipe_data["glutenFree"] == 'true':
 							recipe.glutenFree = True
-						if recipe["dairyFree"] == 'true':
+						if recipe_data["dairyFree"] == 'true':
 							recipe.dairyFree = True
 						#no fat free or peanut free
 

@@ -47,11 +47,7 @@ def facebook_authorized():
     if user and user.fb_token != resp['access_token']:
         user = dao.update_user_fb_token(user, resp['access_token'])
     if not user:
-        name_split = me.data['name'].split()
-        first_name = name_split[0]
-        last_name = name_split[1]
-
-        user = dao.create_user(me.data['id'], first_name, last_name, resp['access_token'])
+        user = dao.create_user(me.data['id'], me.data['name'], resp['access_token'])
 
     login_user(user)
     return redirect("/profile")

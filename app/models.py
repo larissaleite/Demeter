@@ -25,6 +25,11 @@ class Rating(Document):
 	recipe = ReferenceField('Recipe')
 	rating = IntField(required=True)
 
+class RatingIds(Document):
+	user_id = IntField(required=True)
+	recipe_id = IntField(required=True)
+	rating = IntField(required=True)
+
 class Recipe(Document):
 	recipe_id = SequenceField()
 	title = StringField(max_length=255, required=True)
@@ -41,16 +46,15 @@ class Recipe(Document):
 	reviews = ListField(EmbeddedDocumentField('Review'))
 
 class User(Document, UserMixin):
-	first_name = StringField(max_length=255, required=True)
-	last_name = StringField(max_length=255, required=True)
-	fb_id = IntField(required=True)
-	fb_token = StringField(max_length=255, required=True)
+	user_id = SequenceField()
+	name = StringField(max_length=255, required=True)
+	fb_id = IntField()
+	fb_token = StringField(max_length=255)
 	age = IntField()
 	gender = BinaryField()
 	email = StringField(max_length=255)
 	location = StringField(max_length=255)
 	coordinates = StringField(max_length=255)
 	preferred_ingredients = ListField(EmbeddedDocumentField('Ingredient'))
-	allergies = ListField(EmbeddedDocumentField('Ingredient'))
-	diet_labels = ListField(StringField(max_length=50))
+	restricted_ingredients = ListField(EmbeddedDocumentField('Ingredient'))
 	favorite_recipes = ListField(ReferenceField('Recipe'))

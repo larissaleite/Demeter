@@ -1,16 +1,27 @@
 def generate_user_ratings():
     import os, glob, json, random, csv
 
-    recipes = Recipe.objects().only("recipe_id")
+    '''recipes = Recipe.objects().only("recipe_id")
+    users = User.objects()
 
-    ratings_csv = []
-
-    for x in range(0,100000):
-        user_id = int(random.uniform(1,10000))
+    for x in range(0,100):
+        user = random.choice(users)
         recipe_id = random.choice(recipes).recipe_id
         rating = random.uniform(1.0, 5.0)
 
-        line = str(user_id)+","+str(recipe_id)+","+str(rating)
+        user_recipe_rate = RatingTest(
+            user=user,
+            recipe_id=recipe_id,
+            rating=rating
+        )
+
+        user_recipe_rate.save()'''
+
+    ratings_csv = []
+    ratings = RatingIds.objects()
+
+    for _rating in ratings:
+        line = str(_rating.user_id)+","+str(_rating.recipe_id)+","+str(_rating.rating)
         #print line
         ratings_csv.append(line)
 

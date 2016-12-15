@@ -19,21 +19,23 @@ def index():
 @app.route('/home', methods=['GET'])
 @login_required
 def home():
-	#recipes = dao.get_most_popular_recipes()
-	recipes = []
-
 	global user_favorite_recipes
 	global user_recipes_rating
 
 	if not user_favorite_recipes:
-		user_favorite_recipes = dao.get_user_favorite_recipes(current_user.id)
+		user_favorite_recipes = dao.get_user_favorite_recipes_ids(current_user.id)
 
 	if not user_recipes_rating:
 		user_recipes_rating = dao.get_user_ratings(current_user.id)
 
-	recommender.get_recommended_recipes_for_user(100)
+	print user_favorite_recipes
+	print user_recipes_rating
 
-	return render_template("home.html", recipes=recipes)
+	popular_recipes = recommender.get_most_popular_recipes()
+	recommended_recipes = recommender.get_recommended_recipes_for_user(current_user.user_id)
+	favorite_recipes = dao.get_user_favorite_recipes(current_user.id)
+
+	return render_template("home.html", popular_recipes=popular_recipes, recommended_recipes=recommended_recipes, favorite_recipes=favorite_recipes)
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -45,11 +47,12 @@ def profile():
 		gender = request.json['gender']
 		location = request.json['location']
 		coordinates = request.json['coordinates']
-		restrictions = request.json['restrictions']
-		ingredients = request.json['ingredients']
-		diet_labels = request.json['diet_labels']
+		restricted_ingredients = request.json['restricted_ingredients']
+		preferred_ingredients = request.json['preferred_ingredients']
+		#diet_labels = request.json['diet_labels']
+		diet_labels = []
 
-		dao.set_user(current_user.id, age, gender, location, coordinates, ingredients, restrictions, diet_labels)
+		dao.set_user(current_user.id, age, gender, location, coordinates, preferred_ingredients, restricted_ingredients, diet_labels)
 
 		return home()
 
@@ -57,7 +60,8 @@ def profile():
 @login_required
 def get_recipe(recipe_id):
 	recipe = dao.get_recipe(recipe_id)
-	similar_recipes = recommender.get_similar_recipes(recipe)
+	#similar_recipes = recommender.get_similar_recipes(recipe)
+	similar_recipes = []
 
 	is_favorite_recipe = False
 	rating = 0

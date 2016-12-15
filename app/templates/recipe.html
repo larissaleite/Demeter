@@ -18,6 +18,12 @@
                 <h4>{{ recipe.title }}</h4>
             </div>
 
+            {% if recipe.rating %}
+            <div class="recipe_avg">
+                <p>Rating: {{ recipe.rating }}</p>
+            </div>
+            {% endif %}
+
             <div class="recipe_characteristics">
                 {% if recipe.vegetarian %}
                 <i class="fa fa-check" aria-hidden="true"></i> Vegetarian
@@ -121,6 +127,7 @@
         </div>
     </div>
 
+    {% if similar_recipes %}
     <div class="row">
         <div class="col-xs-12">
             <h4>Similar recipes</h4>
@@ -292,6 +299,7 @@
 
         </div>
     </div>
+    {% endif %}
 
 </div>
 

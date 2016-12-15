@@ -66,17 +66,17 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'jkAngularRatingStars'])
                     $scope.longitude = coordinates[1];
                 }
 
-                if (user.ingredients != undefined) {
+                if (user.preferred_ingredients != undefined) {
                     $scope.ingredientsSelected = [];
-                    for (var i=0; i< user.ingredients.length; i++) {
+                    for (var i=0; i< user.preferred_ingredients.length; i++) {
                         $scope.ingredientsSelected.push(user.ingredients[i].name);
                     }
                 }
 
-                if (user.restrictions != undefined) {
+                if (user.restricted_ingredients != undefined) {
                     $scope.restrictionsSelected = [];
-                    for (var i=0; i< user.restrictions.length; i++) {
-                        $scope.restrictionsSelected.push(user.restrictions[i].name);
+                    for (var i=0; i< user.restricted_ingredients.length; i++) {
+                        $scope.restrictionsSelected.push(user.restricted_ingredients[i].name);
                     }
                 }
 
@@ -120,8 +120,8 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'jkAngularRatingStars'])
             coordinates: coordinates,
             age: age,
             gender: gender,
-            ingredients: ingredients,
-            restrictions: restrictions,
+            preferred_ingredients: ingredients,
+            restricted_ingredients: restrictions,
             diet_labels: diet_labels
         }
 
