@@ -1,20 +1,21 @@
 from pyspark.mllib.recommendation import ALS, MatrixFactorizationModel, Rating
+import json
 
 class PreferenceEngine():
 
 	def __init__(self, spark):
 		self.spark = spark
 
-	def build_model(self, all_user_recipe_rating):
+	def build_model(self, ratings):
 		# Load model
 		try:
-			saved_model = MatrixFactorizationModel.load(self.spark, "target/tmp/myCollaborativeFilter")
+			#REMOVE!!
+			saved_model = ALS.train(ratings, rank, numIterations)
+			#saved_model = MatrixFactorizationModel.load(self.spark, "target/tmp/myCollaborativeFilter")
 			return saved_model
 		except:
 			# Load and parse the data
-			data = self.spark.textFile("/Users/larissaleite/Documents/Demeter/app/ratings.csv") #use ratings after!
-			ratings = data.map(lambda l: l.split(','))\
-				.map(lambda l: Rating(int(l[0]), int(l[1]), float(l[2])))
+			print "-----------except"
 
 			# Build the recommendation model using Alternating Least Squares
 			rank = 5
@@ -24,7 +25,7 @@ class PreferenceEngine():
 			#evaluate_model(model, ratings)
 
 			# Save model
-			model.save(sc, "target/tmp/myCollaborativeFilter")
+			#model.save(self.spark, "target/tmp/myCollaborativeFilter")
 
 			return model
 
@@ -37,22 +38,29 @@ class PreferenceEngine():
 		print("Mean Squared Error = " + str(MSE))
 
 	def get_recommended_recipes_for_user(self, all_user_recipe_rating, user_id):
-		#model = self.build_model(all_user_recipe_rating)
+		#all_user_recipe_rating = [{'rating': 1, 'recipe_id': 8798, 'user_id': 2108}, {'rating': 4, 'recipe_id': 6985, 'user_id': 4236}, {'rating': 4, 'recipe_id': 13572, 'user_id': 2743}, {'rating': 4, 'recipe_id': 6312, 'user_id': 3156}, {'rating': 1, 'recipe_id': 12836, 'user_id': 768}, {'rating': 1, 'recipe_id': 9237, 'user_id': 1599}, {'rating': 2, 'recipe_id': 16946, 'user_id': 2687}, {'rating': 2, 'recipe_id': 20728, 'user_id': 58}, {'rating': 4, 'recipe_id': 12921, 'user_id': 2221}, {'rating': 2, 'recipe_id': 10693, 'user_id': 2114}, {'rating': 2, 'recipe_id': 18301, 'user_id': 4898}, {'rating': 2, 'recipe_id': 9967, 'user_id': 3010}, {'rating': 2, 'recipe_id': 16393, 'user_id': 4830}, {'rating': 4, 'recipe_id': 14838, 'user_id': 583}]
+		ratings_RDD = self.spark.parallelize(all_user_recipe_rating)
+		#ratings_RDD = ratings_RDD.flatMap(json.loads)
 
-		data = self.spark.textFile("/Users/larissaleite/Documents/Demeter/app/ratings.csv") #use ratings after!
+		ratings = ratings_RDD.map(lambda row:
+		  Rating(int(row[0]),
+		   int(row[1]),
+		   float(row[1])))
+
+		model = self.build_model(ratings)
+
+		'''data = self.spark.textFile("/Users/larissaleite/Documents/Demeter/app/ratings.csv") #use ratings after!
 		ratings = data.map(lambda l: l.split(','))\
-			.map(lambda l: Rating(int(l[0]), str(l[1]), float(l[2])))
+			.map(lambda l: Rating(int(l[0]), str(l[1]), float(l[2])))'''
 
-		#rated_recipes_ids = ratings.filter(lambda rating: rating[0]==user_id).map(lambda x: str(x[1])).distinct().collect()
-		unrated_recipes_ids = ratings.filter(lambda rating: not rating[0]==user_id).map(lambda x: str(x[1])).distinct()#.collect()
+		rated_recipes = ratings.filter(lambda rating: rating[0]==user_id).map(lambda x: str(x[1]))#.distinct().collect()
+		#--unrated_recipes_ids = ratings.filter(lambda rating: not rating[0]==user_id).map(lambda x: str(x[1])).distinct()#.collect()
 		#candidates = self.spark.parallelize([r for r in unrated_recipes_ids if r not in rated_recipes_ids])
 		#to transform in an array and print, just put .collect() after
+		user_unrated_recipes = ratings.map(lambda x: (x[1])).subtract(rated_recipes)
+		user_unrated_recipes = user_unrated_recipes.map(lambda x: (user_id, x)).distinct()#.collect()
 
-		rank = 5
-		numIterations = 10
-		model = ALS.train(ratings, rank, numIterations)
-
-		predictions = model.predictAll(unrated_recipes_ids.map(lambda x: (user_id, x))).collect()
+		predictions = model.predictAll(user_unrated_recipes).collect()
 		recommendations = sorted(predictions, key=lambda x: x[2], reverse=True)[:100]
 
 		print "\nRECOMMENDATIONS\n"
@@ -66,9 +74,13 @@ class PreferenceEngine():
 		#return recommendations
 
 	def get_most_popular_recipes(self, all_user_recipe_rating):
-		data = self.spark.textFile("/Users/larissaleite/Documents/Demeter/app/ratings.csv") #use ratings after!
-		ratings = data.map(lambda l: l.split(','))\
-			.map(lambda l: Rating(int(l[0]), str(l[1]), float(l[2])))
+		ratings_RDD = self.spark.parallelize(all_user_recipe_rating)
+		#ratings_RDD = ratings_RDD.flatMap(json.loads)
+
+		ratings = ratings_RDD.map(lambda row:
+		  Rating(int(row[0]),
+		   int(row[1]),
+		   float(row[1])))
 
 		# From ratings with tuples of (UserID, RecipeID, Rating) create an RDD with tuples of the (RecipeID, iterable of Ratings for that RecipeID)
 		recipeIDsWithRatingsRDD = (ratings

@@ -1,4 +1,6 @@
 from app.models import *
+from bson import json_util
+import json
 
 class Dao:
 
@@ -117,7 +119,8 @@ class Dao:
 
 	# RATING
 	def get_all_ratings(self):
-		return RatingIds.objects().as_pymongo()
+		#return json.loads(json_util.dumps(RatingIds.objects().exclude("id").as_pymongo()))
+		return RatingIds.objects().scalar("user_id", "recipe_id", "rating")
 
 	def get_user_ratings(self, user_id):
 		user = User.objects.filter(id=str(user_id)).first()
@@ -166,9 +169,11 @@ class Dao:
 
 		for rating in ratings:
 			total_sum += float(rating)
-
-		avg_rating = "{0:.2f}".format(total_sum/float(len(ratings)))
-
+		try:
+			avg_rating = "{0:.2f}".format(total_sum/float(len(ratings)))
+		except:
+			avg_rating = 0
+			
 		ingredients = []
 
 		for ingredient in recipe['ingredients']:

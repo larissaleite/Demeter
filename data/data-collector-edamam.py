@@ -8,39 +8,39 @@ def save_unique_recipes_to_json():
 	for filename in glob.glob(os.getcwd()+'/data/datasets/edamam/*.json'):
 		print "Opening "+filename
 		with open(filename) as json_data:
-			data = json.load(json_data)
+			if filename != os.getcwd()+'/data/datasets/edamam/edamam_recipes.json':
+				data = json.load(json_data)
 
-			for recipe_data in data['hits']:
-				recipe_data = recipe_data['recipe']
+				for recipe_data in data['hits']:
+					recipe_data = recipe_data['recipe']
 
-				uri = recipe_data['uri']
+					uri = recipe_data['uri']
 
-				if uri not in recipe_uris:
+					if uri not in recipe_uris:
 
-					title = recipe_data['label']
-					recipe_uris.append(uri)
+						title = recipe_data['label']
+						recipe_uris.append(uri)
 
-					ingredients = []
+						ingredients = []
 
-					for ingredient_data in recipe_data['ingredients']:
+						for ingredient_data in recipe_data['ingredients']:
 
-						ingredient = {
-							'name': ingredient_data['food'],
-							'amount' : ingredient_data['quantity'],
-							'unit' : ingredient_data['measure']
+							ingredient = {
+								'name': ingredient_data['food'],
+								'amount' : ingredient_data['quantity'],
+								'unit' : ingredient_data['measure']
+							}
+
+							ingredients.append(ingredient)
+
+						recipe = {
+							'title' : title,
+							'ingredients': ingredients,
+							'labels' : recipe_data['healthLabels'] +recipe_data['dietLabels'],
+							'image' : recipe_data['image']
 						}
 
-						ingredients.append(ingredient)
-
-					recipe = {
-						'title' : title,
-						'ingredients': ingredients,
-						'healthLabels' : recipe_data['healthLabels'],
-						'dietLabels' : recipe_data['dietLabels'],
-						'calories' : recipe_data['calories']
-					}
-
-					recipes.append(recipe)
+						recipes.append(recipe)
 
 	print len(recipes)
 
@@ -113,5 +113,5 @@ if __name__ == '__main__':
 	else:
 		from ..app.models import *
 
-	#save_unique_recipes_to_json()
-	insert_data_db()
+	save_unique_recipes_to_json()
+	#insert_data_db()

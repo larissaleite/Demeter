@@ -25,42 +25,53 @@ def save_unique_recipes_to_json():
 	for filename in glob.glob(os.getcwd()+'/data/datasets/spoonacular/*.json'):
 		print "Opening "+filename
 		with open(filename) as json_data:
-			data = json.load(json_data)
+			if filename != os.getcwd()+'/data/datasets/spoonacular/spoonacular_recipes.json':
 
-			for recipe_data in data['recipes']:
-				id = recipe_data['id']
+				data = json.load(json_data)
 
-				if id not in recipe_ids:
-					title = recipe_data['title']
-					recipe_ids.append(recipe_ids)
+				for recipe_data in data['recipes']:
+					id = recipe_data['id']
 
-					ingredients = []
+					if id not in recipe_ids:
+						title = recipe_data['title']
+						recipe_ids.append(recipe_ids)
 
-					for ingredient_data in recipe_data['extendedIngredients']:
-						category = ""
-						if 'aisle' in ingredient_data:
-							category = ingredient_data['aisle']
+						ingredients = []
 
-						ingredient = {
-							'name': ingredient_data['name'],
-							'amount' : ingredient_data['amount'],
-							'unit' : ingredient_data['unit'],
-							'category' : category
+						for ingredient_data in recipe_data['extendedIngredients']:
+							category = ""
+							if 'aisle' in ingredient_data:
+								category = ingredient_data['aisle']
+
+							ingredient = {
+								'name': ingredient_data['name'],
+								'amount' : ingredient_data['amount'],
+								'unit' : ingredient_data['unit'],
+								'category' : category
+							}
+
+							ingredients.append(ingredient)
+
+						labels = []
+
+						if recipe_data["vegan"] == 'true':
+							labels.append("vegan")
+						if recipe_data["vegetarian"] == 'true':
+							labels.append("vegetarian")
+						if recipe_data["glutenFree"] == 'true':
+							labels.append("glutenFree")
+						if recipe_data["dairyFree"] == 'true':
+							labels.append("dairyFree")
+
+						recipe = {
+							'title' : title,
+							'labels' : labels,
+							'ingredients': ingredients,
+							'cuisines': recipe_data["cuisines"],
+							'image' : recipe_data["image"]
 						}
 
-						ingredients.append(ingredient)
-
-					recipe = {
-						'title' : title,
-						'vegan': recipe_data["vegan"],
-						'vegetarian': recipe_data["vegetarian"],
-						'glutenFree': recipe_data["glutenFree"],
-						'dairyFree': recipe_data["dairyFree"],
-						'ingredients': ingredients,
-						'cuisines': recipe_data["cuisines"]
-					}
-
-					recipes.append(recipe)
+						recipes.append(recipe)
 
 	print len(recipes)
 
@@ -136,5 +147,5 @@ if __name__ == '__main__':
 		from ..app.models import *
 
 	#get_data_from_api()
-	insert_data_db()
-	#save_unique_recipes_to_json()
+	#insert_data_db()
+	save_unique_recipes_to_json()

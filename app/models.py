@@ -43,6 +43,7 @@ class Recipe(Document):
 	fatFree = BooleanField()
 	peanutFree = BooleanField()
 	calories = FloatField()
+	labels = ListField(StringField(max_length=255))
 	reviews = ListField(EmbeddedDocumentField('Review'))
 
 class User(Document, UserMixin):
