@@ -30,26 +30,31 @@ class Dao:
 
 		return user
 
+	def get_users(self):
+		return User.objects()
+
 	def get_user_by_id(self, user_id):
-		user = User.objects.filter(user_id=user_id).first()
+		user_data = User.objects.filter(user_id=user_id).first()
 
 		favorite_recipes = []
 
-		for recipe in user.favorite_recipes:
-			favorite_recipes.append(self.get_recipe_id(recipe.id)[0])
+		for recipe in user_data.favorite_recipes:
+			favorite_recipes.append(self.get_recipe_id(recipe.id))
 
 		preferred_ingredients = []
 		restricted_ingredients = []
 
-		for ingredient in user.preferred_ingredients:
+		for ingredient in user_data.preferred_ingredients:
 			preferred_ingredients.append(ingredient['name'])
 
-		for ingredient in user.restricted_ingredients:
+		for ingredient in user_data.restricted_ingredients:
 			restricted_ingredients.append(ingredient['name'])
 
-		user.preferred_ingredients = preferred_ingredients
-		user.restricted_ingredients = restricted_ingredients
-		user.favorite_recipes = favorite_recipes
+		user = dict()
+
+		user["preferred_ingredients"] = preferred_ingredients
+		user["restricted_ingredients"] = restricted_ingredients
+		user["favorite_recipes"] = favorite_recipes
 
 		return user
 
@@ -137,6 +142,9 @@ class Dao:
 	def get_user_ratings_ids(self, user_id):
 		return RatingIds.objects(user_id=user_id).as_pymongo()
 
+	def get_user_ratings_objects(self, user_id):
+		return RatingIds.objects(user_id=user_id).only("recipe_id", "rating")
+
 	def save_user_recipe_rating(self, user_id, recipe_id, rating):
 		user = User.objects.filter(id=user_id).first()
 		recipe = Recipe.objects.filter(id=str(recipe_id)).first()
@@ -173,7 +181,7 @@ class Dao:
 			avg_rating = "{0:.2f}".format(total_sum/float(len(ratings)))
 		except:
 			avg_rating = 0
-			
+
 		ingredients = []
 
 		for ingredient in recipe['ingredients']:
@@ -199,7 +207,8 @@ class Dao:
 		return recipe
 
 	def get_recipe_id(self, recipe_id):
-		return Recipe.objects(id=recipe_id).scalar("recipe_id")
+		recipe_id = Recipe.objects(id=recipe_id).scalar("recipe_id").first()
+		return recipe_id
 
 	def get_recipes_from_ids(self, recipes_ids):
 		all_recipes = Recipe.objects.filter(recipe_id__in=recipes_ids)

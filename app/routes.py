@@ -148,6 +148,10 @@ def get_user():
 	user = dao.get_user(current_user.id)
 	return jsonify(user=user)
 
+@app.route('/recommender', methods=['GET'])
+def recommender_demo():
+	return render_template('recommender_demo.html')
+
 @app.route('/api/ingredients', methods=['GET'])
 def get_ingredients():
 	all_ingredients = dao.get_all_ingredients()

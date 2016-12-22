@@ -73,18 +73,28 @@ def create_reviews():
 		recipe.save()
 
 def create_ratings():
-	ingredients_names = Recipe.objects.distinct(field="ingredients.name")
 	recipes = Recipe.objects()[:30]
+
+	all_ingredients = set()
+
+	for recipe in recipes:
+		ingredients = Recipe.objects.filter(recipe_id=recipe.recipe_id).only("ingredients").first().ingredients
+
+		for ingredient in ingredients:
+			all_ingredients.update([ingredient.name])
+
+	all_ingredients = list(all_ingredients)
+
 	users = User.objects()
 
 	for user in users:
-		'''favorite_recipes = []
+		favorite_recipes = []
 		preferred_ingredients = []
 		restricted_ingredients = []
 
 		for x in range(0,3):
 			recipe = random.choice(recipes)
-			ingredient_name = random.choice(ingredients_names)
+			ingredient_name = random.choice(all_ingredients)
 
 			if recipe not in favorite_recipes:
 				favorite_recipes.append(recipe)
@@ -96,7 +106,7 @@ def create_ratings():
 				preferred_ingredients.append(ingredient)
 
 		for x in range(0,3):
-			ingredient_name = random.choice(ingredients_names)
+			ingredient_name = random.choice(all_ingredients)
 
 			if ingredient_name not in restricted_ingredients and ingredient_name not in preferred_ingredients:
 				ingredient = Ingredient(
@@ -108,19 +118,24 @@ def create_ratings():
 			'set__favorite_recipes' : favorite_recipes,
 			'set__preferred_ingredients':preferred_ingredients,
 			'set__restricted_ingredients':restricted_ingredients
-		})'''
+		})
+
+		rated_recipes_ids = []
 
 		for x in range(0,5):
 			recipe = random.choice(recipes)
 			rating = random.uniform(3.5, 5.0)
 
-			user_recipe_rate = RatingIds(
-				user_id=user.user_id,
-				recipe_id=recipe.recipe_id,
-				rating=rating
-			)
+			if recipe.recipe_id not in rated_recipes_ids:
+				rated_recipes_ids.append(recipe.recipe_id)
 
-			user_recipe_rate.save()
+				user_recipe_rate = RatingIds(
+					user_id=user.user_id,
+					recipe_id=recipe.recipe_id,
+					rating=rating
+				)
+
+				user_recipe_rate.save()
 
 def create_recipes():
 	#EDAMAM

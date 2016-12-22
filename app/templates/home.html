@@ -15,7 +15,7 @@
     <div class="row">
         <div class="col-xs-12">
             <h4>Recommended recipes</h4>
-            {% for recipe_row in recommended_recipes | batch(4, '&nbsp;') %}
+            {% for recipe_row in recommended_recipes | batch(4) %}
             <div class="row">
                 {% for recipe in recipe_row %}
                 <div class="col-md-3">
@@ -70,7 +70,7 @@
     <div class="row">
         <div class="col-xs-12">
             <h4>Most popular recipes <i class="fa fa-users" aria-hidden="true"></i></h4>
-            {% for recipe_row in popular_recipes | batch(4, '&nbsp;') %}
+            {% for recipe_row in popular_recipes | batch(4) %}
             <div class="row">
                 {% for recipe in recipe_row %}
                 <div class="col-md-3">
@@ -126,7 +126,7 @@
     <div class="row">
         <div class="col-xs-12">
             <h4>Favorite recipes <i class="fa fa-heart-o" aria-hidden="true"></i></h4>
-            {% for recipe_row in favorite_recipes | batch(4, '&nbsp;') %}
+            {% for recipe_row in favorite_recipes | batch(4) %}
             <div class="row">
                 {% for recipe in recipe_row %}
                 <div class="col-md-3">
