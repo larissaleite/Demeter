@@ -17,7 +17,6 @@ class Recommender:
         return popular_recipes
 
     def get_recommended_recipes_for_user(self, user_id):
-        #try:
         all_user_recipe_rating = self.dao.get_all_ratings()
 
         user_ratings = self.dao.get_user_ratings_ids(user_id)
@@ -38,21 +37,12 @@ class Recommender:
 
         return recommended_recipes
 
-    def get_similar_recipes(self, recipe):
-        #TODO IMPLEMENT content-based
-        return self.dao.get_most_popular_recipes()
-
     def filter(self, user, recommended_recipes):
         restrictions = user["restricted_ingredients"]
         favorite_recipes = user["favorite_recipes"]
 
-        print "##### BEFORE FILTERING #####"
-        print recommended_recipes
-        print "\n"
-
         filtered_recommendations = []
 
-        #restricted_recipes = set()
         restricted_recipes = []
 
         for ingredient in restrictions:
@@ -60,13 +50,7 @@ class Recommender:
             ingredient_recipes = self.dao.get_all_recipes_ids_per_ingredient(ingredient)
             restricted_recipes.append(ingredient_recipes)
 
-        #restricted_recipes = list(restricted_recipes)
-
         filtered_recommendations = [r for r in recommended_recipes if (r not in restricted_recipes and r not in favorite_recipes)]
-
-        print "##### AFTER FILTERING #####"
-        print filtered_recommendations
-        print "\n"
 
         return filtered_recommendations
 
@@ -79,8 +63,6 @@ class Recommender:
 
         boosted = False
 
-        print "#### BOOSTING #####"
-
         for recommended_recipe in recommended_recipes:
             recipe_score_dict[recommended_recipe] = 1
 
@@ -89,7 +71,6 @@ class Recommender:
             for ingredient in preferred_ingredients:
                 if ingredient in ingredients:
                     boosted = True
-                    print "Preferred ingredient [" + ingredient + "] in recipe [" + str(recommended_recipe)+"]"
                     recipe_score_dict[recommended_recipe] += recipe_score_dict[recommended_recipe]*0.2
 
         if boosted:
@@ -101,6 +82,4 @@ class Recommender:
         else:
             top_10_recipes = recommended_recipes[:10]
 
-        print top_10_recipes
-        print "\n"
         return top_10_recipes

@@ -1,5 +1,9 @@
 import os, glob, json, random
 from bson import ObjectId
+from pymongo import *
+
+client = MongoClient()
+db = client['demeter_v1']
 
 def create_users():
 	with open("/Users/larissaleite/Documents/Demeter/data/users.json") as json_data:
@@ -39,8 +43,6 @@ def create_users():
 			gender = random.choice(['F', 'M'])
 
 			user = User(
-				city=data["City"],
-				country=data["Country"],
 				email=data["Email"],
 				name=data["Full Name"],
 				age=age,
@@ -238,6 +240,54 @@ def create_recipes():
 								continue
 						recipe.save()
 
+def create_recipes_integrated():
+	all_recipes = db.recipes.find()
+
+	'''for full_recipe in all_recipes:
+		cuisines = full_recipe['cuisines']
+		labels = full_recipe['labels']
+
+		if type(cuisines) != list:
+			cuisines_list = []
+			cuisines_list.append(cuisines)
+			cuisines = cuisines_list
+
+		if len(labels) > 0 and type(labels[0]) == list:
+			labels = labels[0]
+
+		recipe = Recipe(
+			title=full_recipe['title'],
+			image=full_recipe['image'],
+			labels=labels,
+			cuisines=cuisines
+		)
+
+		for ingredient in full_recipe['ingredients']:
+
+			ingredient = ExtendedIngredient(
+				name=ingredient['name'],
+				amount=ingredient['amount'],
+				unit=ingredient['unit'],
+			)
+
+			recipe.ingredients.append(ingredient)
+
+		recipe.save()'''
+
+	for full_recipe in all_recipes:
+		recipe = Recipe.objects(title=full_recipe['title']).first()
+
+		print recipe.title
+
+		recommended_recipes = []
+
+		title_recommended_recipes = full_recipe['recommended']
+
+		for recommended in title_recommended_recipes:
+			recommended_recipe = Recipe.objects(title=recommended).first()
+			recipe.recommended_recipes.append(recommended_recipe)
+		
+		recipe.save()
 
 if __name__ == '__main__':
 	if __package__ is None:
@@ -252,6 +302,6 @@ if __name__ == '__main__':
 	else:
 		from ..app.models import *
 
-	#create_recipes()
+	create_recipes_integrated()
 	#create_users()
-	create_ratings()
+	#create_ratings()

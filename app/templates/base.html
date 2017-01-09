@@ -26,8 +26,21 @@
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+    <!-- Charts highcharts -->
+
+      <script src="http://code.highcharts.com/highcharts.js"></script>
+
+      <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+      <!--<script src="https://code.highcharts.com/stock/highstock.js"></script>-->
+      <script src="https://code.highcharts.com/modules/drilldown.js"></script>
+
+      <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+      <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
 
     <!-- AngularJS -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.js"></script>
@@ -130,6 +143,7 @@
                     <ul class="nav navbar-nav navbar-right">
                         <li><a href="/home">Home</a></li>
                         <li><a href="/profile">Profile</a></li>
+                        <li><a href="/analysis">Analysis</a></li>
                         <li class="dropdown">
                             <a href="" class="dropdown-toggle" data-toggle="dropdown">
                                 <img class="img-circle profile-avatar" src="https://graph.facebook.com/{{ current_user.fb_id }}/picture">

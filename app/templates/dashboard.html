@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Recipes Analysis-->
+<div class="row">
+    <div class="col-md-2">
+      <button class="btAnalysis btn btn-default" style="width: 250px; height: 50px; margin-bottom:10px " type="button">Interaction Analysis</button>
+      <br/>
+      <button  class="btAnalysis btn btn-default" style="width: 250px; height: 50px; margin-bottom:10px" type="button">People are interested in</button>
+      <br/>
+      <button  class="btAnalysis btn btn-default" style="width: 250px; height: 50px; margin-bottom:10px" type="button">Ratio Analysis</button>
+      <br/>
+      <button  class="btAnalysis btn btn-default" style="width: 250px; height: 50px; margin-bottom:10px" type="button">Type of Food Analysis</button>
+      <br/>
+      <button  class="btAnalysis btn btn-default" style="width: 250px; height: 50px; margin-bottom:10px" type="button">Recommendation System </button>
+      <br/>
+    </div>
+
+    <div class="col-md-8" style="text-align:right">
+
+
+          <div id="report_interested_people" >
+            <div class="row" >
+
+                  <p>Filter By:</p>
+
+                      <label for="weekly">Weekly</label>
+                      <input id="radio-week" type="radio" name="content" ng-model="content" value="weekly">
+                      <br />
+                      <label for="monthly">Monthly</label>
+                      <input id="other" type="radio" name="content" ng-model="content" value="monthly">
+
+
+                    <div class="wrapper" ng-controller="FilterCtrl">
+
+                    <p ng-show="content == 'weekly'"  >
+
+                      <input id="exampleInput" type="week" name="input" ng-model="week"
+                           placeholder="yyyy-MM" min="2013-01" max="2013-12" required />
+
+                    </p>
+                    <p ng-show="content == 'monthly'">
+                      <input  ng-model="month" min="2016-01"    max="2016-12"  type="month" name="month_year"> </p>
+                          {[ week.value ]}
+                  </div>
+
+
+
+            </div>
+
+            <div class="=row">
+                <div class="col-md-6">
+
+                    <div id="pie_people_interested"></div>
+
+                </div>
+
+            </div>
+
+
+
+
+          </div>
+    </div>
+
+</div>
+
+
+<script>
+  $( document ).ready(function(){
+    $('#fromDate').datepicker();
+    $('#toDate').datepicker();
+  })
+</script>
+
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+{% endblock content %}

@@ -2,16 +2,16 @@ import os, glob, json, requests
 
 def get_data_from_api():
 
-	for x in range(250,300):
+	for x in range(500,550):
 		response = requests.get("https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/random?limitLicense=false&number=100",
 		  headers={
-			"X-Mashape-Key": "gRoA2rL1xLmshqs60gDOU8iUfjfMp1lu0uyjsn4vA0zVyylWN0",
+			"X-Mashape-Key": "62t27Bg1q7mshtmPnpbNVMOAVw9Tp1PkKrqjsnebv8Ph00q2x3",
 			"Accept": "application/json"
 		  }
 		)
 
 		total = x*100
-		print "Writing " +str(total)+ " recipes to folder"
+		print "Writing recipes to folder"
 
 		file = open(os.getcwd()+'/data/datasets/spoonacular/recipes'+str(x)+'.json', 'wb')
 		file.write(json.dumps(response.json()))
@@ -54,13 +54,13 @@ def save_unique_recipes_to_json():
 
 						labels = []
 
-						if recipe_data["vegan"] == 'true':
+						if recipe_data["vegan"] == True:
 							labels.append("vegan")
-						if recipe_data["vegetarian"] == 'true':
+						if recipe_data["vegetarian"] == True:
 							labels.append("vegetarian")
-						if recipe_data["glutenFree"] == 'true':
+						if recipe_data["glutenFree"] == True:
 							labels.append("glutenFree")
-						if recipe_data["dairyFree"] == 'true':
+						if recipe_data["dairyFree"] == True:
 							labels.append("dairyFree")
 
 						recipe = {
@@ -133,6 +133,22 @@ def insert_data_db():
 
 						recipe.save()
 
+def check_cuisines_labels():
+	with open(os.getcwd()+'/data/datasets/spoonacular/spoonacular_recipes.json') as json_data:
+		data = json.load(json_data)
+		has_cuisine = 0
+		has_label = 0
+		for recipe in data:
+			if len(recipe['cuisines']) > 0:
+				has_cuisine += 1
+			if len(recipe['labels']) > 0:
+				has_label += 1
+
+		print "Has cuisine"
+		print has_cuisine
+		print "Has label"
+		print has_label
+
 if __name__ == '__main__':
 	if __package__ is None:
 		import sys
@@ -148,4 +164,5 @@ if __name__ == '__main__':
 
 	#get_data_from_api()
 	#insert_data_db()
-	save_unique_recipes_to_json()
+	#save_unique_recipes_to_json()
+	check_cuisines_labels()

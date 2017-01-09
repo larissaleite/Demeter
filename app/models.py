@@ -20,11 +20,6 @@ class Review(EmbeddedDocument):
 	recipe = ReferenceField('Recipe')
 	date = DateTimeField(default=datetime.datetime.now, required=True)
 
-class Rating(Document):
-	user = ReferenceField('User')
-	recipe = ReferenceField('Recipe')
-	rating = IntField(required=True)
-
 class RatingIds(Document):
 	user_id = IntField(required=True)
 	recipe_id = IntField(required=True)
@@ -34,17 +29,11 @@ class Recipe(Document):
 	recipe_id = SequenceField()
 	title = StringField(max_length=255, required=True)
 	ingredients = ListField(EmbeddedDocumentField('ExtendedIngredient'))
-	image = StringField(max_length=255)
-	instructions = StringField(max_length=500)
-	vegetarian = BooleanField()
-	vegan = BooleanField()
-	glutenFree = BooleanField()
-	dairyFree = BooleanField()
-	fatFree = BooleanField()
-	peanutFree = BooleanField()
-	calories = FloatField()
+	image = StringField(max_length=500)
+	cuisines = ListField(StringField(max_length=255))
 	labels = ListField(StringField(max_length=255))
 	reviews = ListField(EmbeddedDocumentField('Review'))
+	recommended_recipes = ListField(ReferenceField('Recipe'))
 
 class User(Document, UserMixin):
 	user_id = SequenceField()

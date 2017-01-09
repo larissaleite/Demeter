@@ -28,14 +28,6 @@ class PreferenceEngine():
 
 			return model
 
-	def evaluate_model(self, model, ratings):
-		# Evaluate the model on training data
-		testdata = ratings.map(lambda p: (p[0], p[1]))
-		predictions = model.predictAll(testdata).map(lambda r: ((r[0], r[1]), r[2]))
-		ratesAndPreds = ratings.map(lambda r: ((r[0], r[1]), r[2])).join(predictions)
-		MSE = ratesAndPreds.map(lambda r: (r[1][0] - r[1][1])**2).mean()
-		print("Mean Squared Error = " + str(MSE))
-
 	def get_recommended_recipes_for_user(self, all_user_recipe_rating, user_id):
 		ratings_RDD = self.spark.parallelize(all_user_recipe_rating)
 
@@ -47,20 +39,10 @@ class PreferenceEngine():
 		user_unrated_recipes_ids = ratings.map(lambda x: str(x[1])).distinct().subtract(user_rated_recipes)
 		user_unrated_recipes = user_unrated_recipes_ids.map(lambda x: (user_id, x)).distinct()
 
-		print "\n RATED"
-		print user_rated_recipes.collect()
-
-		print "\n UNRATED"
-		print user_unrated_recipes_ids.collect()
-
 		predictions = model.predictAll(user_unrated_recipes).collect()
 		recommendations = sorted(predictions, key=lambda x: x[2], reverse=True)[:100]
 
-		#print "\nRECOMMENDATIONS\n"
-
 		products = self.spark.parallelize(recommendations).map(lambda x: x.product).collect()
-		#print products
-		#print "##########################"
 
 		return products
 

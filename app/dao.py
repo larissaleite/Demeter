@@ -1,8 +1,15 @@
 from app.models import *
 from bson import json_util
+from bson.json_util import dumps
 import json
+from pymongo import *
+import re
 
 class Dao:
+
+	def __init__(self, db):
+		client = MongoClient()
+		self.db = client[db]
 
 	# USER
 	def create_user(self, fb_id, name, access_token):
@@ -186,22 +193,26 @@ class Dao:
 
 		for ingredient in recipe['ingredients']:
 			ingredients.append({
-				'text' : ingredient['full_text']
+				'text' : str(ingredient['amount']) + " " + str(ingredient['unit']) + " " + str(ingredient['name'])
 			})
+
+		recommended_recipes = recipe['recommended_recipes'][:4]
+
+		similar_recipes = []
+
+		for recommended_recipe in recommended_recipes:
+			similar_recipe = Recipe.objects().filter(id=recommended_recipe.id).only("title", "image", "id").as_pymongo()
+			similar_recipes.append(similar_recipe[0])
 
 		recipe = {
 			'id' : recipe_id,
 			'title' : recipe['title'],
 			'img' : recipe['image'],
-			'instructions' : recipe['instructions'],
-			'vegetarian' : recipe['vegetarian'],
-			'glutenFree' : recipe['glutenFree'],
-			'dairyFree' : recipe['dairyFree'],
-			'fatFree' : recipe['fatFree'],
-			'peanutFree' : recipe['peanutFree'],
-			'calories' : recipe['calories'],
+			'labels' : recipe['labels'],
+			'cuisines' : recipe['cuisines'],
 			'ingredients' : ingredients,
-			'rating' : avg_rating
+			'rating' : avg_rating,
+			'recommended_recipes' : similar_recipes
 		}
 
 		return recipe
@@ -227,11 +238,9 @@ class Dao:
 				'id' : recipe['id'],
 				'img' : recipe['image'],
 				'title' : recipe['title'],
-				'vegetarian' : recipe['vegetarian'],
-				'glutenFree' : recipe['glutenFree'],
-				'dairyFree' : recipe['dairyFree'],
-				'ingredients' : ingredients,
-				'instructions' : recipe['instructions']
+				'labels' : recipe['labels'],
+				'cuisines' : recipe['cuisines'],
+				'ingredients' : ingredients
 			})
 
 		return recipes
@@ -282,3 +291,12 @@ class Dao:
 
 	def get_all_ingredients(self):
 		return Recipe.objects.distinct(field="ingredients.name")
+
+	def get_analysis_favorites_reviews_year(self, country):
+		if country != "All":
+			pipe = [{ "$match" : { "country" : country } }, {"$group" : {"_id":"$month_name", "count_fav":{ "$sum":1}}}]
+		else:
+			pipe = [{"$group" : {"_id":"$month_name", "count":{ "$sum":1}}}]
+
+		results = self.db.analysis_rec.aggregate(pipeline=pipe)
+		return dumps(results)

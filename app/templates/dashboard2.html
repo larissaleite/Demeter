@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div ng-controller="AnalysisCtrl">
+    <div class="col-md-2"></div>
+
+    <div class="col-md-8">
+
+        <div class="select-filters">
+            <button class="btn btn-default" ng-click="selectWeek()">Week</button>
+            <button class="btn btn-default" ng-click="selectMonth()">Month</button>
+            <button class="btn btn-default" ng-click="selectYear()">Year</button>
+
+            <select class="form-control" name="country" ng-model="country" ng-options="country for country in countries" required>
+            </select>
+        </div>
+
+        <br>
+
+        <div ng-show="showWeek">
+            <input ng-model="week.value" class="form-control" name="input" type="week" placeholder="yyyy-MM" min="2016-01" max="2016-12" />
+        </div>
+        <div ng-show="showMonth">
+            <input ng-model="month.value" class="form-control" min="2016-01" max="2016-12" type="month" name="month_year">
+        </div>
+
+        <button class="btn btn-success" ng-click="getData()">Update</button>
+
+        <div id="chart_nb_interaction"></div>
+
+    </div>
+</div>
+
+
+{% endblock content %}

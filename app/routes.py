@@ -25,8 +25,8 @@ def home():
 	if not user_favorite_recipes:
 		user_favorite_recipes = dao.get_user_favorite_recipes_ids(current_user.id)
 
-	if not user_recipes_rating:
-		user_recipes_rating = dao.get_user_ratings(current_user.id)
+	'''if not user_recipes_rating:
+		user_recipes_rating = dao.get_user_ratings(current_user.id)'''
 
 	print user_favorite_recipes
 	print user_recipes_rating
@@ -60,8 +60,6 @@ def profile():
 @login_required
 def get_recipe(recipe_id):
 	recipe = dao.get_recipe(recipe_id)
-	#similar_recipes = recommender.get_similar_recipes(recipe)
-	similar_recipes = []
 
 	is_favorite_recipe = False
 	rating = 0
@@ -77,7 +75,7 @@ def get_recipe(recipe_id):
 		'rating' : rating
 	}
 
-	return render_template("recipe.html", recipe=recipe, similar_recipes=similar_recipes, user_data=user_recipe_data)
+	return render_template("recipe.html", recipe=recipe, user_data=user_recipe_data)
 
 @app.route('/rating/new', methods=['POST'])
 @login_required
@@ -148,6 +146,13 @@ def get_user():
 	user = dao.get_user(current_user.id)
 	return jsonify(user=user)
 
+@app.route('/comments_favorites_year', methods=['GET'])
+def get_comments_favorites_year():
+	country = request.args["country"]
+
+	response = dao.get_analysis_favorites_reviews_year(country)
+	return response
+
 @app.route('/recommender', methods=['GET'])
 def recommender_demo():
 	return render_template('recommender_demo.html')
@@ -160,3 +165,7 @@ def get_ingredients():
 @app.route('/template_select', methods = ['GET'])
 def get_template_select():
 	return render_template('template_select.html')
+
+@app.route('/analysis', methods= ['GET'])
+def get_dashboard():
+	return render_template('dashboard2.html')
