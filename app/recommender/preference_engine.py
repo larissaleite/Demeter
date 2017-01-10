@@ -1,5 +1,5 @@
 from pyspark.mllib.recommendation import ALS, MatrixFactorizationModel, Rating
-import json
+import json, timeit
 
 class PreferenceEngine():
 
@@ -10,8 +10,9 @@ class PreferenceEngine():
 		# Load model
 		try:
 			#REMOVE!!
-			saved_model = ALS.train(ratings, rank, numIterations)
-			#saved_model = MatrixFactorizationModel.load(self.spark, "target/tmp/myCollaborativeFilter")
+			#saved_model = ALS.train(ratings, rank, numIterations)
+			saved_model = MatrixFactorizationModel.load(self.spark, "target/tmp/myCollaborativeFilter")
+			print "returning saved"
 			return saved_model
 		except:
 			# Load and parse the data
@@ -23,8 +24,12 @@ class PreferenceEngine():
 
 			#evaluate_model(model, ratings)
 
+			# Cache
+			model.userFeatures().cache()
+			model.productFeatures().cache()
+
 			# Save model
-			#model.save(self.spark, "target/tmp/myCollaborativeFilter")
+			model.save(self.spark, "target/tmp/myCollaborativeFilter")
 
 			return model
 
@@ -33,14 +38,26 @@ class PreferenceEngine():
 
 		ratings = ratings_RDD.map(lambda row: Rating(int(row[0]), int(row[1]), float(row[1])))
 
+		start_time = timeit.default_timer()
+
 		model = self.build_model(ratings)
+		elapsed = timeit.default_timer() - start_time
+		print "MODEL -- " + str(elapsed)
+
+		start_time = timeit.default_timer()
 
 		user_rated_recipes = ratings.filter(lambda rating: rating[0]==user_id).map(lambda x: str(x[1]))
 		user_unrated_recipes_ids = ratings.map(lambda x: str(x[1])).distinct().subtract(user_rated_recipes)
 		user_unrated_recipes = user_unrated_recipes_ids.map(lambda x: (user_id, x)).distinct()
 
 		predictions = model.predictAll(user_unrated_recipes).collect()
+		elapsed = timeit.default_timer() - start_time
+		print "SCORE -- " + str(elapsed)
+
+		start_time = timeit.default_timer()
 		recommendations = sorted(predictions, key=lambda x: x[2], reverse=True)[:100]
+		elapsed = timeit.default_timer() - start_time
+		print "TOP 100 -- " + str(elapsed)
 
 		products = self.spark.parallelize(recommendations).map(lambda x: x.product).collect()
 

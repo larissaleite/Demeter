@@ -48,3 +48,5 @@ class User(Document, UserMixin):
 	preferred_ingredients = ListField(EmbeddedDocumentField('Ingredient'))
 	restricted_ingredients = ListField(EmbeddedDocumentField('Ingredient'))
 	favorite_recipes = ListField(ReferenceField('Recipe'))
+	diet_labels = ListField(StringField(max_length=50))
+	favorite_cuisines = ListField(StringField(max_length=50))

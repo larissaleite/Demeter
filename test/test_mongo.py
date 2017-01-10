@@ -9,9 +9,6 @@ db = client['demeter_v1']
 #print Recipe.objects(recipe_id=20000).only("ingredients.name").as_pymongo()
 #db.recipe.find({ recipe_id : 20000 }, { "ingredients.name" : 1, _id : 0 })
 
-
-
-
 '''
 ingredient = "banana"
 title = re.compile(r'banana', re.I)

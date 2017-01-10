@@ -23,7 +23,7 @@ app.config.from_object('config')
 db = MongoEngine(app)
 
 #creating DAO and Recommender objects
-dao = Dao('demeter_v1')
+dao = Dao('demeter_demo')
 recommender = Recommender(dao, sc)
 
 #initializing lists to hold user information

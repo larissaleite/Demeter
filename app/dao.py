@@ -31,7 +31,8 @@ class Dao:
 			'coordinates' : user.coordinates,
 			'preferred_ingredients' : user.preferred_ingredients,
 			'restricted_ingredients' : user.restricted_ingredients,
-			#'diet_labels' : user.diet_labels,
+			'diet_labels' : user.diet_labels,
+			'favorite_cuisines' : user.favorite_cuisines,
 			'favorite_recipes' : user.favorite_recipes
 		}
 
@@ -73,7 +74,7 @@ class Dao:
 		user.update(fb_token=fb_token)
 		return user
 
-	def set_user(self, user_id, age, gender, location, coordinates, ingredients, restrictions, diet_labels):
+	def set_user(self, user_id, age, gender, location, coordinates, ingredients, restrictions, diet_labels, favorite_cuisines):
 		preferred_ingredients = []
 		restricted_ingredients = []
 
@@ -97,7 +98,9 @@ class Dao:
 			'set__location' : location,
 			'set__coordinates' : coordinates,
 			'set__preferred_ingredients':preferred_ingredients,
-			'set__restricted_ingredients':restricted_ingredients
+			'set__restricted_ingredients':restricted_ingredients,
+			'set__diet_labels':diet_labels,
+			'set__favorite_cuisines' : favorite_cuisines
 		})
 
 	def favorite_recipe(self, recipe_id, user_id):
@@ -134,18 +137,6 @@ class Dao:
 		#return json.loads(json_util.dumps(RatingIds.objects().exclude("id").as_pymongo()))
 		return RatingIds.objects().scalar("user_id", "recipe_id", "rating")
 
-	def get_user_ratings(self, user_id):
-		user = User.objects.filter(id=str(user_id)).first()
-		ratings = Rating.objects.filter(user=user)
-
-		user_recipes_rating = dict()
-
-		for rating in ratings:
-			if str(rating.recipe.id) not in user_recipes_rating:
-				user_recipes_rating[str(rating.recipe.id)] = rating.rating
-
-		return user_recipes_rating
-
 	def get_user_ratings_ids(self, user_id):
 		return RatingIds.objects(user_id=user_id).as_pymongo()
 
@@ -156,14 +147,14 @@ class Dao:
 		user = User.objects.filter(id=user_id).first()
 		recipe = Recipe.objects.filter(id=str(recipe_id)).first()
 
-		user_recipe_rate = Rating.objects(user=user, recipe=recipe).first()
+		user_recipe_rate = RatingIds.objects(user_id=user.user_id, recipe_id=recipe.recipe_id).first()
 
 		#checks if rating already exists
 		if user_recipe_rate is None:
 
-			user_recipe_rate = Rating(
-				user=user,
-				recipe=recipe,
+			user_recipe_rate = RatingIds(
+				user_id=user.user_id,
+				recipe_id=recipe.recipe_id,
 				rating=rating
 			)
 
@@ -206,6 +197,7 @@ class Dao:
 
 		recipe = {
 			'id' : recipe_id,
+			'recipe_id' : recipe['recipe_id'],
 			'title' : recipe['title'],
 			'img' : recipe['image'],
 			'labels' : recipe['labels'],
@@ -280,6 +272,26 @@ class Dao:
 	def delete_recipe_review(self, recipe_id, review_id):
 		return Recipe.objects(id=str(recipe_id)).update(pull__reviews__id=str(review_id))
 
+	def search_recipes(self, title, labels, ingredients, cuisines):
+		query = {}
+
+		if title:
+			title = re.compile(title, re.I)
+			query['title'] = { "$regex" : title }
+
+		if labels:
+			query['labels'] = { "$in" : labels }
+
+		if cuisines:
+			query['cuisines'] = { "$in" : cuisines }
+
+		if ingredients:
+			query['ingredients'] = { "$elemMatch" : {  "name" :  { "$in" : ingredients } } }
+
+		results = self.db.recipe.find(query)
+		print results.count()
+		return dumps(results)
+
 	# INGREDIENTS
 	def get_ingredients_per_recipe_id(self, recipe_id):
 		ingredients = Recipe.objects.filter(recipe_id=recipe_id).only("ingredients").first().ingredients
@@ -291,6 +303,12 @@ class Dao:
 
 	def get_all_ingredients(self):
 		return Recipe.objects.distinct(field="ingredients.name")
+
+	def get_all_labels(self):
+		return Recipe.objects.distinct(field="labels")
+
+	def get_all_cuisines(self):
+		return Recipe.objects.distinct(field="cuisines")
 
 	def get_analysis_favorites_reviews_year(self, country):
 		if country != "All":

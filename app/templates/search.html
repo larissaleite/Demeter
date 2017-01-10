@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div ng-controller="SearchCtrl">
+
+<div class="row">
+
+<div class="col-md-2">
+</div>
+
+<div class="col-md-10" >
+
+    <h4>Recipe search</h4>
+    <form name="searchForm" novalidate>
+
+        <div class="row">
+            <div class="col-xs-8">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" class="form-control" ng-model="title">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-8">
+                <label>Contains Ingredients:</label>
+                <oi-select
+                oi-options="item for item in ingredients"
+                ng-model="ingredientsSelected"
+                multiple
+                placeholder="Select"
+                ></oi-select>
+            </div>
+        </div>
+
+        <br>
+
+        <div class="row">
+            <div class="col-xs-8">
+                <label>Contains Labels:</label>
+                <oi-select
+                oi-options="item for item in labels"
+                ng-model="labelsSelected"
+                multiple
+                placeholder="Select"
+                ></oi-select>
+            </div>
+        </div>
+
+        <br>
+
+        <div class="row">
+            <div class="col-xs-8">
+                <label>Contains Cuisines:</label>
+                <oi-select
+                oi-options="item for item in cuisines"
+                ng-model="cuisinesSelected"
+                multiple
+                placeholder="Select"
+                ></oi-select>
+            </div>
+        </div>
+
+        <!-- Rating >= -->
+        <br>
+
+        <div class="row">
+            <div class="col-xs-8">
+                <button ng-click="search()" class="form-control btn btn-primary">Search</button>
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+</div>
+
+<div class="row" ng-show="recipes.length > 0" style="padding:1%;">
+    <div class="col-md-12">
+
+        <h4>Search results - {[ recipes.length ]}</h4>
+        <div class="row">
+            <div ng-repeat="recipe in recipes">
+                <div class="clearfix" ng-if="$index % 4 == 0"></div>
+                <div class="col-md-3">
+                    <div class="thumbnail">
+                        <img ng-src="{[ recipe.image  ]}" alt="...">
+                        <div class="caption">
+                            <p><a ng-href="/recipe/{[ recipe._id['$oid'] ]}">{[ recipe.title ]}</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</div>
+
+{% endblock content %}

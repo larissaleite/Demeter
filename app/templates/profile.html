@@ -65,6 +65,18 @@
             <br>
 
             <div class="col-xs-12">
+                <label>Favorite Cuisines</label>
+                <oi-select
+                oi-options="item for item in cuisines"
+                ng-model="cuisinesSelected"
+                multiple
+                placeholder="Select"
+                ></oi-select>
+            </div>
+
+            <br>
+
+            <div class="col-xs-12">
                 <div ng-show="userLocation == null">
                     <google-places location=location></google-places>
                 </div>

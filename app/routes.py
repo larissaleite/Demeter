@@ -25,8 +25,8 @@ def home():
 	if not user_favorite_recipes:
 		user_favorite_recipes = dao.get_user_favorite_recipes_ids(current_user.id)
 
-	'''if not user_recipes_rating:
-		user_recipes_rating = dao.get_user_ratings(current_user.id)'''
+	if not user_recipes_rating:
+		user_recipes_rating = dao.get_user_ratings_ids(current_user.user_id)
 
 	print user_favorite_recipes
 	print user_recipes_rating
@@ -49,12 +49,40 @@ def profile():
 		coordinates = request.json['coordinates']
 		restricted_ingredients = request.json['restricted_ingredients']
 		preferred_ingredients = request.json['preferred_ingredients']
-		#diet_labels = request.json['diet_labels']
-		diet_labels = []
+		diet_labels = request.json['diet_labels']
+		favorite_cuisines = request.json['favorite_cuisines']
 
-		dao.set_user(current_user.id, age, gender, location, coordinates, preferred_ingredients, restricted_ingredients, diet_labels)
+		dao.set_user(current_user.id, age, gender, location, coordinates, preferred_ingredients, restricted_ingredients, diet_labels, favorite_cuisines)
 
 		return home()
+
+@app.route('/search', methods=['GET', 'POST'])
+def search_recipes():
+	if request.method == 'GET':
+		return render_template('search.html')
+	else:
+		if 'title' in request.json:
+			title = request.json['title']
+		else:
+			title = None
+
+		if 'labels' in request.json:
+			labels = request.json['labels']
+		else:
+			labels = None
+
+		if 'ingredients' in request.json:
+			ingredients = request.json['ingredients']
+		else:
+			ingredients = None
+
+		if 'cuisines' in request.json:
+			cuisines = request.json['cuisines']
+		else:
+			cuisines = None
+
+		recipes = dao.search_recipes(title, labels, ingredients, cuisines)
+		return recipes
 
 @app.route('/recipe/<recipe_id>', methods=['GET'])
 @login_required
@@ -67,8 +95,8 @@ def get_recipe(recipe_id):
 	if recipe_id in user_favorite_recipes:
 		is_favorite_recipe = True
 
-	if recipe_id in user_recipes_rating:
-		rating = user_recipes_rating[str(recipe_id)]
+	if recipe['recipe_id'] in user_recipes_rating:
+		rating = user_recipes_rating[str(recipe['recipe_id'])]
 
 	user_recipe_data = {
 		'is_favorite_recipe' : is_favorite_recipe,
@@ -161,6 +189,16 @@ def recommender_demo():
 def get_ingredients():
 	all_ingredients = dao.get_all_ingredients()
 	return jsonify( { 'all_ingredients': all_ingredients } )
+
+@app.route('/api/labels', methods=['GET'])
+def get_labels():
+	all_labels = dao.get_all_labels()
+	return jsonify( { 'all_labels': all_labels } )
+
+@app.route('/api/cuisines', methods=['GET'])
+def get_cuisines():
+	all_cuisines = dao.get_all_cuisines()
+	return jsonify( { 'all_cuisines': all_cuisines } )
 
 @app.route('/template_select', methods = ['GET'])
 def get_template_select():

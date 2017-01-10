@@ -27,11 +27,34 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'jkAngularRatingStars'])
 
     $scope.genders = ['F', 'M'];
 
-    $scope.labels = ['Vegetarian', 'Gluten Free', 'Lactose Free']
+    $scope.labels = []
+
+    /* get all labels in the database, so that they can be displayed in the lists */
+    $http.get('/api/labels')
+    .success(function(response) {
+        var all_labels = response.all_labels;
+
+        for (var i=0; i<all_labels.length; i++) {
+            $scope.labels.push(all_labels[i]);
+        }
+    });
+
+    $scope.cuisines = []
+
+    /* get all cuisines in the database, so that they can be displayed in the lists */
+    $http.get('/api/cuisines')
+    .success(function(response) {
+        var all_cuisines = response.all_cuisines;
+
+        for (var i=0; i<all_cuisines.length; i++) {
+            $scope.cuisines.push(all_cuisines[i]);
+        }
+    });
 
     $scope.ingredientsSelected;
     $scope.restrictionsSelected;
     $scope.labelsSelected;
+    $scope.cuisinesSelected;
 
     $scope.age = $scope.ages[0];
 
@@ -89,6 +112,13 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'jkAngularRatingStars'])
                         $scope.labelsSelected.push(user.diet_labels[i]);
                     }
                 }
+
+                if (user.favorite_cuisines != undefined) {
+                    $scope.cuisinesSelected = [];
+                    for (var i=0; i< user.favorite_cuisines.length; i++) {
+                        $scope.cuisinesSelected.push(user.favorite_cuisines[i]);
+                    }
+                }
             });
         }
     }
@@ -117,6 +147,7 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'jkAngularRatingStars'])
         var ingredients = $scope.ingredientsSelected;
         var restrictions = $scope.restrictionsSelected;
         var diet_labels = $scope.labelsSelected;
+        var favorite_cuisines = $scope.cuisinesSelected;
 
         var user_profile = {
             location: location,
@@ -125,7 +156,8 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'jkAngularRatingStars'])
             gender: gender,
             preferred_ingredients: ingredients,
             restricted_ingredients: restrictions,
-            diet_labels: diet_labels
+            diet_labels: diet_labels,
+            favorite_cuisines: favorite_cuisines
         }
 
         $http.post('/profile', user_profile)
@@ -362,6 +394,63 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'jkAngularRatingStars'])
     }
 
   }])
+
+.controller('SearchCtrl', ['$scope', '$http', '$filter', function($scope, $http, $filter) {
+    $scope.recipes = [];
+
+    $scope.ingredients = [];
+
+    $http.get('/api/ingredients')
+    .success(function(response) {
+        var all_ingredients = response.all_ingredients;
+
+        for (var i=0; i<all_ingredients.length; i++) {
+            $scope.ingredients.push(all_ingredients[i]);
+        }
+    });
+
+    $scope.labels = []
+
+    $http.get('/api/labels')
+    .success(function(response) {
+        var all_labels = response.all_labels;
+
+        for (var i=0; i<all_labels.length; i++) {
+            $scope.labels.push(all_labels[i]);
+        }
+    });
+
+    $scope.cuisines = []
+
+    $http.get('/api/cuisines')
+    .success(function(response) {
+        var all_cuisines = response.all_cuisines;
+
+        for (var i=0; i<all_cuisines.length; i++) {
+            $scope.cuisines.push(all_cuisines[i]);
+        }
+    });
+
+    $scope.title;
+    $scope.ingredientsSelected;
+    $scope.labelsSelected;
+    $scope.cuisinesSelected;
+
+    $scope.search = function() {
+        var search = {
+            'title' : $scope.title,
+            'ingredients' : $scope.ingredientsSelected,
+            'labels' : $scope.labelsSelected,
+            'cuisines' : $scope.cuisinesSelected
+        }
+
+        $http.post('/search', search)
+        .success(function(response) {
+            console.log(response)
+            $scope.recipes = response
+        });
+    }
+}])
 
 .directive('googlePlaces', function(){
     return {
