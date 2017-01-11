@@ -1,5 +1,6 @@
 from app.recommender.preference_engine import *
-import operator, timeit
+import operator
+from random import shuffle
 
 class Recommender:
 
@@ -10,17 +11,27 @@ class Recommender:
 		self.preference_engine = PreferenceEngine(spark)
 
 	def get_most_popular_recipes(self):
-		start_time = timeit.default_timer()
 		all_user_recipe_rating = self.dao.get_all_ratings()
-		elapsed = timeit.default_timer() - start_time
-		print "GET ALL RECIPES RATING -- " + str(elapsed)
-		start_time = timeit.default_timer()
 		popular_recipes_ids = self.preference_engine.get_most_popular_recipes(all_user_recipe_rating)
-		elapsed = timeit.default_timer() - start_time
-		print "GET MOST POPULAR RECIPE -- " + str(elapsed)
 		popular_recipes = self.dao.get_recipes_from_ids(popular_recipes_ids)[:12]
 
 		return popular_recipes
+
+	def get_similar_recipes_for_user(self, user):
+		rated_recipes = self.dao.get_user_ratings_recipe_ids(user.user_id)
+		favorite_recipes = self.dao.get_user_favorite_recipes_ids(user.id)
+
+		recipes_user_likes = list(set(rated_recipes).union(favorite_recipes))
+
+		content_recommended_recipes = self.dao.get_recommended_recipes(recipes_user_likes)
+
+		similar_recipes = [r for r in content_recommended_recipes if r not in recipes_user_likes]
+
+		shuffle(similar_recipes)
+
+		recommended_recipes = self.dao.get_recipes_from_oids(similar_recipes[:12])
+
+		return recommended_recipes
 
 	def get_recommended_recipes_for_user(self, user_id):
 		all_user_recipe_rating = self.dao.get_all_ratings()
@@ -32,20 +43,12 @@ class Recommender:
 		else:
 			recommended_recipes_ids = self.preference_engine.get_recommended_recipes_for_user(all_user_recipe_rating, user_id)
 
-		# from the 100, filter and boost to provide the best 10
+		# from the 100, filter and boost to provide the best 12
 
 		user = self.dao.get_user_by_id(user_id)
 
-		start_time = timeit.default_timer()
 		filtered_recommended_recipes_ids = self.filter(user, recommended_recipes_ids)
-		elapsed = timeit.default_timer() - start_time
-		print "FILTER -- " + str(elapsed)
-
-		start_time = timeit.default_timer()
-
 		boosted_recommended_recipes_ids = self.boost(user, filtered_recommended_recipes_ids)
-		elapsed = timeit.default_timer() - start_time
-		print "BOOST -- " + str(elapsed)
 
 		recommended_recipes = self.dao.get_recipes_from_ids(boosted_recommended_recipes_ids)
 
@@ -69,10 +72,10 @@ class Recommender:
 		return filtered_recommendations
 
 	def boost(self, user, recommended_recipes):
-		#boost recipe score by 20% for each ingredient in the user's preferred ingredients
-		# TODO: also include labels
-
 		preferred_ingredients = user["preferred_ingredients"]
+		favorite_cuisines = user["favorite_cuisines"]
+		diet_labels = user["diet_labels"]
+
 		recipe_score_dict = dict()
 
 		boosted = False
@@ -80,20 +83,34 @@ class Recommender:
 		for recommended_recipe in recommended_recipes:
 			recipe_score_dict[recommended_recipe] = 1
 
-			ingredients = self.dao.get_ingredients_per_recipe_id(recommended_recipe)
+			recipe_data = self.dao.get_ingredients_labels_cuisines_recipe(recommended_recipe)
+
+			ingredients = recipe_data['ingredients']
+			cuisines = recipe_data['cuisines']
+			labels = recipe_data['labels']
 
 			for ingredient in preferred_ingredients:
 				if ingredient in ingredients:
 					boosted = True
 					recipe_score_dict[recommended_recipe] += recipe_score_dict[recommended_recipe]*0.2
 
+			for cuisine in favorite_cuisines:
+				if cuisine in cuisines:
+					boosted = True
+					recipe_score_dict[recommended_recipe] += recipe_score_dict[recommended_recipe]*0.2
+
+			for label in diet_labels:
+				if label in labels:
+					boosted = True
+					recipe_score_dict[recommended_recipe] += recipe_score_dict[recommended_recipe]*0.2
+
 		if boosted:
-			sorted_recipes = sorted(recipe_score_dict.items(), key=operator.itemgetter(1), reverse=True)[:10]
+			sorted_recipes = sorted(recipe_score_dict.items(), key=operator.itemgetter(1), reverse=True)[:12]
 
-			top_10_recipes = []
+			top_12_recipes = []
 			for recipe in sorted_recipes:
-				top_10_recipes.append(recipe[0])
+				top_12_recipes.append(recipe[0])
 		else:
-			top_10_recipes = recommended_recipes[:10]
+			top_12_recipes = recommended_recipes[:12]
 
-		return top_10_recipes
+		return top_12_recipes

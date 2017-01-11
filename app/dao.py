@@ -63,6 +63,8 @@ class Dao:
 		user["preferred_ingredients"] = preferred_ingredients
 		user["restricted_ingredients"] = restricted_ingredients
 		user["favorite_recipes"] = favorite_recipes
+		user["favorite_cuisines"] = user_data.favorite_cuisines
+		user["diet_labels"] = user_data.diet_labels
 
 		return user
 
@@ -134,14 +136,10 @@ class Dao:
 
 	# RATING
 	def get_all_ratings(self):
-		#return json.loads(json_util.dumps(RatingIds.objects().exclude("id").as_pymongo()))
 		return RatingIds.objects().scalar("user_id", "recipe_id", "rating")
 
 	def get_user_ratings_ids(self, user_id):
 		return RatingIds.objects(user_id=user_id).as_pymongo()
-
-	def get_user_ratings_objects(self, user_id):
-		return RatingIds.objects(user_id=user_id).only("recipe_id", "rating")
 
 	def save_user_recipe_rating(self, user_id, recipe_id, rating):
 		user = User.objects.filter(id=user_id).first()
@@ -165,6 +163,11 @@ class Dao:
 	def get_recipe_ratings(self, recipe_id):
 		ratings = RatingIds.objects(recipe_id=str(recipe_id)).scalar("rating")
 		return ratings
+
+	def get_user_ratings_recipe_ids(self, user_id):
+		 recipe_ids = RatingIds.objects(user_id=user_id).scalar("recipe_id")
+		 recipe_oids = Recipe.objects(recipe_id__in=recipe_ids).scalar("id")
+		 return [str(id) for id in recipe_oids]
 
 	# RECIPE
 	def get_recipe(self, recipe_id):
@@ -215,6 +218,30 @@ class Dao:
 
 	def get_recipes_from_ids(self, recipes_ids):
 		all_recipes = Recipe.objects.filter(recipe_id__in=recipes_ids)
+
+		recipes = []
+
+		for recipe in all_recipes:
+			ingredients = []
+
+			for ingredient in recipe['ingredients']:
+				ingredients.append({
+					'text' : ingredient['full_text']
+				})
+
+			recipes.append({
+				'id' : recipe['id'],
+				'img' : recipe['image'],
+				'title' : recipe['title'],
+				'labels' : recipe['labels'],
+				'cuisines' : recipe['cuisines'],
+				'ingredients' : ingredients
+			})
+
+		return recipes
+
+	def get_recipes_from_oids(self, recipes_ids):
+		all_recipes = Recipe.objects.filter(id__in=recipes_ids)
 
 		recipes = []
 
@@ -291,6 +318,32 @@ class Dao:
 		results = self.db.recipe.find(query)
 		print results.count()
 		return dumps(results)
+
+	def get_ingredients_labels_cuisines_recipe(self, recipe_id):
+		recipe = Recipe.objects.filter(recipe_id=recipe_id).only("labels", "cuisines", "ingredients").first()
+
+		ingredients_names = []
+		for ingredient in recipe.ingredients:
+			ingredients_names.append(ingredient.name)
+
+		recipe_data = {
+			'ingredients' : ingredients_names,
+			'labels' : recipe.labels,
+			'cuisines' : recipe.cuisines
+		}
+
+		return recipe_data
+
+	def get_recommended_recipes(self, recipes_ids):
+		recipes = Recipe.objects(id__in=recipes_ids).only("recommended_recipes")
+
+		recommended_recipes_ids = []
+
+		for recipe in recipes:
+			for recommended_recipe in recipe.recommended_recipes:
+				recommended_recipes_ids.append(str(recommended_recipe.id))
+
+		return list(set(recommended_recipes_ids))
 
 	# INGREDIENTS
 	def get_ingredients_per_recipe_id(self, recipe_id):

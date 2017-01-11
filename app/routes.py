@@ -34,8 +34,9 @@ def home():
 	popular_recipes = recommender.get_most_popular_recipes()
 	recommended_recipes = recommender.get_recommended_recipes_for_user(current_user.user_id)
 	favorite_recipes = dao.get_user_favorite_recipes(current_user.id)
+	similar_recipes = recommender.get_similar_recipes_for_user(current_user)
 
-	return render_template("home.html", popular_recipes=popular_recipes, recommended_recipes=recommended_recipes, favorite_recipes=favorite_recipes)
+	return render_template("home.html", popular_recipes=popular_recipes, recommended_recipes=recommended_recipes, favorite_recipes=favorite_recipes, similar_recipes=similar_recipes)
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required

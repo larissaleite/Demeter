@@ -14,13 +14,13 @@
 
     <div class="row">
         <div class="col-xs-12">
-            <h4>Recommended recipes</h4>
-            {% for recipe_row in recommended_recipes | batch(4) %}
+            <h4>People who like the same recipe as you also like:</h4><br>
+            {% for recipe_row in recommended_recipes | batch(6) %}
             <div class="row">
                 {% for recipe in recipe_row %}
-                <div class="col-md-3">
-                    <div class="thumbnail">
-                        <img src="{{ recipe.img  }}" alt="...">
+                <div class="col-md-2">
+                    <div class="thumbnail" style="border:none">
+                        <img src="{{ recipe.img  }}" alt="..." class="img-circle">
                         <div class="caption">
                             <p><a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a></p>
                         </div>
@@ -59,11 +59,11 @@
 
     <hr>
 
-    {% if favorite_recipes %}
+    {% if similar_recipes %}
     <div class="row">
         <div class="col-xs-12">
-            <h4>Favorite recipes <i class="fa fa-heart-o" aria-hidden="true"></i></h4>
-            {% for recipe_row in favorite_recipes | batch(4) %}
+            <h4>Recipes similar to recipes you like: <i class="fa fa-heart-o" aria-hidden="true"></i></h4>
+            {% for recipe_row in similar_recipes | batch(4) %}
             <div class="row">
                 {% for recipe in recipe_row %}
                 <div class="col-md-3">
@@ -71,7 +71,7 @@
                         <img src="{{ recipe.img  }}" alt="...">
                         <div class="caption">
                             <p><a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a></p>
-                            
+
 
                         </div>
                     </div>
