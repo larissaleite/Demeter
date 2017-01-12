@@ -8,7 +8,6 @@ from bson import ObjectId, json_util
 
 from app import dao
 from app import recommender
-from app import  user_favorite_recipes, user_recipes_rating
 
 @app.route('/', methods = ['GET'])
 def index():
@@ -19,24 +18,14 @@ def index():
 @app.route('/home', methods=['GET'])
 @login_required
 def home():
-	global user_favorite_recipes
-	global user_recipes_rating
-
-	if not user_favorite_recipes:
-		user_favorite_recipes = dao.get_user_favorite_recipes_ids(current_user.id)
-
-	if not user_recipes_rating:
-		user_recipes_rating = dao.get_user_ratings_ids(current_user.user_id)
-
-	print user_favorite_recipes
-	print user_recipes_rating
-
 	popular_recipes = recommender.get_most_popular_recipes()
 	recommended_recipes = recommender.get_recommended_recipes_for_user(current_user.user_id)
 	favorite_recipes = dao.get_user_favorite_recipes(current_user.id)
 	similar_recipes = recommender.get_similar_recipes_for_user(current_user)
 
-	return render_template("home.html", popular_recipes=popular_recipes, recommended_recipes=recommended_recipes, favorite_recipes=favorite_recipes, similar_recipes=similar_recipes)
+	random_recipes = dao.get_random_recipes()
+
+	return render_template("home.html", popular_recipes=popular_recipes, recommended_recipes=recommended_recipes, favorite_recipes=favorite_recipes, similar_recipes=similar_recipes, random_recipes=random_recipes)
 
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
@@ -93,11 +82,11 @@ def get_recipe(recipe_id):
 	is_favorite_recipe = False
 	rating = 0
 
-	if recipe_id in user_favorite_recipes:
+	if recipe_id in app.config['user_favorite_recipes']:
 		is_favorite_recipe = True
 
-	if recipe['recipe_id'] in user_recipes_rating:
-		rating = user_recipes_rating[str(recipe['recipe_id'])]
+	if str(recipe['recipe_id']) in app.config['user_recipes_rating']:
+		rating = app.config['user_recipes_rating'][str(recipe['recipe_id'])]
 
 	user_recipe_data = {
 		'is_favorite_recipe' : is_favorite_recipe,
@@ -112,9 +101,8 @@ def rate_recipe():
 	recipe_id = request.json['recipe_id']
 	rating = int(request.json['rating'])
 
-	dao.save_user_recipe_rating(current_user.id, recipe_id, rating)
-
-	user_recipes_rating[str(recipe_id)] = rating
+	dao.save_user_recipe_rating(current_user.user_id, recipe_id, rating)
+	app.config['user_recipes_rating'][str(recipe_id)] = rating
 
 	return "Rating added to recipes"
 
@@ -125,8 +113,8 @@ def favorite_recipe():
 
 	dao.favorite_recipe(recipe_id, current_user.id)
 
-	if recipe_id not in user_favorite_recipes:
-		user_favorite_recipes.append(recipe_id)
+	if recipe_id not in app.config['user_favorite_recipes']:
+		app.config['user_favorite_recipes'].append(recipe_id)
 
 	return "Recipe added to favorites"
 
@@ -137,7 +125,7 @@ def unfavorite_recipe():
 
 	dao.unfavorite_recipe(recipe_id, current_user.id)
 
-	user_favorite_recipes.remove(str(recipe_id))
+	app.config['user_favorite_recipes'].remove(str(recipe_id))
 
 	return "Unfavorited!"
 
@@ -208,3 +196,31 @@ def get_template_select():
 @app.route('/analysis', methods= ['GET'])
 def get_dashboard():
 	return render_template('dashboard2.html')
+
+@app.route('/dashboard', methods=['GET'])
+def dashboard():
+	return render_template('dashboard.html', user=current_user)
+
+@app.route('/dash1', methods=['GET'])
+def dash():
+	return render_template('reports/inter_weekly.html', user=current_user)
+
+@app.route('/dash2', methods=['GET'])
+def dash1():
+	return render_template('reports/inter_monthly.html', user=current_user)
+
+@app.route('/dash3', methods=['GET'])
+def dash2():
+	return render_template('reports/top_rated_recipe.html', user=current_user)
+
+@app.route('/dash4', methods=['GET'])
+def dash3():
+	return render_template('reports/favourite_recipe.html', user=current_user)
+
+@app.route('/dash5', methods=['GET'])
+def dash4():
+	return render_template('reports/cuisine_consp.html', user=current_user)
+
+@app.route('/dash6', methods=['GET'])
+def dash5():
+	return render_template('reports/ration_analysis.html', user=current_user)

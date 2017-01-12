@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/4.10.1/bootstrap-social.min.css">
 
     <link href='http://fonts.googleapis.com/css?family=Roboto+Slab' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Merriweather" rel="stylesheet">
 
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/ng-tags-input/2.0.1/ng-tags-input.min.css" />
 
@@ -48,11 +50,11 @@
 
     body {
       padding-top:7%;
-      font-family: 'Roboto Slab', serif;
+      font-family: 'Merriweather', serif;
     }
 
     h1, h2, h3, h4, nav {
-      font-family: 'Roboto Slab', serif;
+      font-family: 'Merriweather', serif;
     }
 
     .recipe_title {
@@ -61,11 +63,6 @@
 
     .recipe_img {
         vertical-align: middle;
-    }
-
-    .recipe_instructions {
-        font-size:10.5px;
-        font-weight:100;
     }
 
     .profile-avatar {
@@ -106,6 +103,10 @@
    .delete-comment {
      margin-right: 2%;
    }
+
+   .navbar-right {
+       font-size: 18px !important;
+   }
     </style>
 </head>
 <body ng-app="demeter">
@@ -121,7 +122,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/">
+                    <a class="navbar-brand" href="/" style="font-size:24px;">
                         <img style="display: inline-block; height:24px;" src="{{ url_for('static', filename='images/demeter.png') }}" />
                         Demeter
                     </a>

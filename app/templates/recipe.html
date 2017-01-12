@@ -1,16 +1,46 @@
 {% extends "base.html" %}
 {% block content %}
 
+<style>
+    .recipe_title {
+        color: orange;
+        font-size:40px;
+    }
+
+    .recipe_avg {
+        color: #978d7b;
+        font-size:18px;
+    }
+
+    .recipe_characteristics, .recipe_ingredients {
+        color:#584d38;
+    }
+</style>
+
 <div class="col-md-1">
 </div>
 
-<div class="col-md-11" ng-controller="RecipeCtrl" ng-init="init('{{ recipe.id }}','{{ current_user.id }}', '{{ user_data.is_favorite_recipe }}', '{{ user_data.rating }}')">
+<div class="col-md-11" ng-controller="RecipeCtrl" ng-init="init('{{ recipe.id }}', '{{ recipe.recipe_id }}','{{ current_user.id }}', '{{ user_data.is_favorite_recipe }}', '{{ user_data.rating }}')">
     <div class="row">
 
         <div class="col-md-4 img_box">
             <div class="recipe_img thumbnail">
                 <img src="{{ recipe.img }}">
             </div>
+
+            <div class="row">
+                <div class="col-xs-4">
+                    <button class="btn btn-danger" ng-show="isFavoriteRecipe" ng-click="unfavorite('{{ recipe.id }}')"><i class="fa fa-heart" aria-hidden="true"></i> Favorited</button>
+                    <button ng-show="!isFavoriteRecipe" class="btn btn-default" ng-click="favorite('{{ recipe.id }}')"><i class="fa fa-heart" aria-hidden="true"></i> Favorite</button>
+                </div>
+                <div class="col-xs-8">
+                    <div layout="column">
+                        <jk-rating-stars rating="rating" on-rating="onRating(rating)"></jk-rating-stars>
+                    </div>
+                </div>
+            </div>
+
+
         </div>
 
         <div class="col-md-8">
@@ -20,54 +50,39 @@
 
             {% if recipe.rating %}
             <div class="recipe_avg">
-                <p>Rating: {{ recipe.rating }}</p>
+                <i class="fa fa-star" aria-hidden="true"></i> {{ recipe.rating }}
             </div>
             {% endif %}
 
+            <div class="row">
+            <div class="col-md-4">
             <div class="recipe_characteristics">
+                <br>
                 {% for label in recipe.labels %}
                 <i class="fa fa-check" aria-hidden="true"></i> {{ label }}<br>
                 {% endfor %}
 
                 <br>
-                <br>
 
-                <p>Cuisines:
-                {% for cuisine in recipe.cuisines %}
+
+                <h4>Cuisines</h4>
+                <p>{% for cuisine in recipe.cuisines %}
                 {{ cuisine }}
                 {% endfor %}
                 </p>
             </div>
+        </div>
 
-            <br>
-
+            <div class="col-md-8">
             <div class="recipe_ingredients">
-                <p>Ingredients</p>
+                <h4>Ingredients</h4>
                 {% for ingredient in recipe.ingredients %}
                 <i class="fa fa-cutlery" aria-hidden="true"></i> {{ ingredient.text }}
                 <br>
                 {% endfor %}
             </div>
-
-            <br>
-
-            <div class="recipe_instructions">
-                {% if recipe.instructions != None %}
-                {{ recipe.instructions }}
-                {% endif %}
-            </div>
-
-            <div class="row">
-                <div class="col-xs-2">
-                    <button class="btn btn-danger" ng-show="isFavoriteRecipe" ng-click="unfavorite('{{ recipe.id }}')"><i class="fa fa-heart" aria-hidden="true"></i> Favorited</button>
-                    <button ng-show="!isFavoriteRecipe" class="btn btn-default" ng-click="favorite('{{ recipe.id }}')"><i class="fa fa-heart" aria-hidden="true"></i> Favorite</button>
-                </div>
-                <div class="col-xs-10">
-                    <div layout="column">
-                        <jk-rating-stars rating="rating" on-rating="onRating(rating)"></jk-rating-stars>
-                    </div>
-                </div>
-            </div>
+        </div>
+        </div>
         </div>
 
     </div>
@@ -85,7 +100,7 @@
 
                     <hr>
 
-                    <img class="img-circle profile-avatar-comment pull-left" src="https://graph.facebook.com/{[r.user_fb_id]}/picture">
+                    <img class="img-circle profile-avatar-comment pull-left" ng-src="https://graph.facebook.com/{[r.user_fb_id]}/picture">
                     <div class="comment-area">
                         <div class="delete-comment pull-right" ng-show="r.user_id == user_id"><i class="fa fa-trash-o" ng-click="delete_comment(r)"></i></div>
                         <p class="comment-description">{[ r.text ]}</p>
@@ -120,7 +135,7 @@
                     <div class="thumbnail">
                         <img src="{{ similar_recipe.image  }}" alt="...">
                         <div class="caption">
-                            <p><a href="/recipe/{{ similar_recipe._id }}">{{ similar_recipe.title }}</a></p>
+                            <p><a style="color:orange;" href="/recipe/{{ similar_recipe._id }}">{{ similar_recipe.title }}</a></p>
 
                         </div>
                     </div>

@@ -1,10 +1,52 @@
 {% extends "base.html" %}
 {% block content %}
 
+<style>
+.favorites {
+        margin-bottom:10%;
+        padding: 2%;
+        border: 1px solid #eee;
+        border-radius: 24px;
+        box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.1), 0px -1px 1px 0px rgba(0,0,0,0.1);
+        background-color: #f8f8f8;
+        right:0;
+        margin-right: 2%;
+        margin-left:2%;
+        max-width: 22%;
+    }
+
+    .favorites > p {
+        font-size:11px;
+        color:#584d38;
+    }
+
+    .thumbnail {
+        border: none !important;
+    }
+
+    .recipe-info > .title {
+        font-size: 18px;
+        font-weight: bold;
+        color: orange;
+    }
+
+    a {
+        color:orange;
+    }
+
+    .recipe-info > .text {
+        color:#584d38;
+    }
+
+    .text-rating {
+        color: #978d7b;
+    }
+</style>
+
 <div class="col-md-1">
 </div>
 
-<div class="col-md-11">
+<div class="col-md-8">
 
     <div class="row">
         <div class="col-xs-12">
@@ -14,13 +56,43 @@
 
     <div class="row">
         <div class="col-xs-12">
-            <h4>People who like the same recipe as you also like:</h4><br>
-            {% for recipe_row in recommended_recipes | batch(6) %}
+            <h4>People who like the same recipes as you also like:</h4><br>
+            {% for recipe in recommended_recipes[:3] %}
+            <div class="row">
+                <div class="col-md-3">
+                        <img src="{{ recipe.img  }}" class="img-circle" alt="..." style="border: 3px solid #EBE6DD; max-width:100%; max-height:100%">
+                </div>
+                <div class="col-md-9">
+                    <div class="recipe-info" style="margin-top: 1%;">
+                        <p class="title">{{ recipe.title }}</p>
+                        <p class="text">
+                            This recipe with characteristics of
+                            {% for cuisine in recipe.cuisines %}
+                            {{ cuisine }}{% if not loop.last %},&nbsp;{% endif %}
+                            {% endfor %} cuisines is suitable for different types of diets:
+                            {% for label in recipe.labels[:5] %}
+                            {{ label.lower() }}{% if not loop.last %},{% endif %}
+                            {% endfor %}
+                        </p>
+                        <p class="text-rating">
+                            <i class="fa fa-star" aria-hidden="true"></i> {{ recipe.rating }}
+                        </p>
+                        <a class="btn btn-default" href="/recipe/{{ recipe.id }}">See more</a>
+                    </div>
+                </div>
+                </div>
+
+                <br>
+
+                {% endfor %}
+            </div>
+            <br>
+            {% for recipe_row in recommended_recipes[6:] | batch(6) %}
             <div class="row">
                 {% for recipe in recipe_row %}
                 <div class="col-md-2">
                     <div class="thumbnail" style="border:none">
-                        <img src="{{ recipe.img  }}" alt="..." class="img-circle">
+                        <img src="{{ recipe.img  }}" alt="..." class="img-circle" style="border: 3px solid #EBE6DD;">
                         <div class="caption">
                             <p><a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a></p>
                         </div>
@@ -31,13 +103,63 @@
             {% endfor %}
 
         </div>
+
+    {% if similar_recipes %}
+    <div class="row">
+        <div class="col-xs-12">
+            <h4>Recipes similar to recipes you like: </h4><br>
+            {% for recipe in similar_recipes[:3] %}
+            <div class="row">
+                <div class="col-md-3">
+                        <img src="{{ recipe.img  }}" class="img-circle" alt="..." style="border: 3px solid #EBE6DD; max-width:100%; max-height:100%">
+                </div>
+                <div class="col-md-9">
+                    <div class="recipe-info" style="margin-top: 1%;">
+                        <p class="title">{{ recipe.title }}</p>
+                        <p class="text">
+                            This recipe with characteristics of
+                            {% for cuisine in recipe.cuisines %}
+                            {{ cuisine }}{% if not loop.last %},&nbsp;{% endif %}
+                            {% endfor %} cuisines is suitable for different types of diets:
+                            {% for label in recipe.labels[:5] %}
+                            {{ label.lower() }}{% if not loop.last %},{% endif %}
+                            {% endfor %}
+                        </p>
+                        <p class="text-rating">
+                            <i class="fa fa-star" aria-hidden="true"></i> {{ recipe.rating }}
+                        </p>
+                        <a class="btn btn-default" href="/recipe/{{ recipe.id }}">See more</a>
+                    </div>
+                </div>
+                </div>
+
+                <br>
+
+                {% endfor %}
+            </div>
+            <br>
+            {% for recipe_row in similar_recipes[6:] | batch(6) %}
+            <div class="row">
+                {% for recipe in recipe_row %}
+                <div class="col-md-2">
+                    <div class="thumbnail" style="border:none">
+                        <img src="{{ recipe.img  }}" alt="..." class="img-circle" style="border: 3px solid #EBE6DD;">
+                        <div class="caption">
+                            <p><a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a></p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
     </div>
+    {% endif %}
 
     <hr>
 
     <div class="row">
         <div class="col-xs-12">
-            <h4>Most popular recipes <i class="fa fa-users" aria-hidden="true"></i></h4>
+            <h4>Best rated recipes <i class="fa fa-users" aria-hidden="true"></i></h4>
             {% for recipe_row in popular_recipes | batch(4) %}
             <div class="row">
                 {% for recipe in recipe_row %}
@@ -46,7 +168,9 @@
                         <img src="{{ recipe.img  }}" alt="...">
                         <div class="caption">
                             <p><a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a></p>
-
+                            <p class="text-rating">
+                                <i class="fa fa-star" aria-hidden="true"></i> {{ recipe.rating }}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -56,33 +180,29 @@
 
         </div>
     </div>
+
+</div>
+
+<div class="col-md-3">
+    <div class="favorites" data-spy="affix">
+    <h4>Most favorited recipes</h4>
+    {% for recipe in random_recipes[:6] %}
+    <p>{{ recipe.title }}</p>
+    {% endfor %}
+    <hr>
+
+    <h4>Vegan recipes</h4>
+    {% for recipe in random_recipes[6:10] %}
+    <p>{{ recipe.title }}</p>
+    {% endfor %}
 
     <hr>
 
-    {% if similar_recipes %}
-    <div class="row">
-        <div class="col-xs-12">
-            <h4>Recipes similar to recipes you like: <i class="fa fa-heart-o" aria-hidden="true"></i></h4>
-            {% for recipe_row in similar_recipes | batch(4) %}
-            <div class="row">
-                {% for recipe in recipe_row %}
-                <div class="col-md-3">
-                    <div class="thumbnail">
-                        <img src="{{ recipe.img  }}" alt="...">
-                        <div class="caption">
-                            <p><a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a></p>
-
-
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
+    <h4>Gluten-Free recipes</h4>
+    {% for recipe in random_recipes[10:15] %}
+    <p>{{ recipe.title }}</p>
+    {% endfor %}
+</div>
 </div>
 
 {% endblock content %}

@@ -1,5 +1,5 @@
 from app.models import *
-from bson import json_util
+from bson import json_util, ObjectId
 from bson.json_util import dumps
 import json
 from pymongo import *
@@ -141,18 +141,25 @@ class Dao:
 	def get_user_ratings_ids(self, user_id):
 		return RatingIds.objects(user_id=user_id).as_pymongo()
 
-	def save_user_recipe_rating(self, user_id, recipe_id, rating):
-		user = User.objects.filter(id=user_id).first()
-		recipe = Recipe.objects.filter(id=str(recipe_id)).first()
+	def get_user_dict_ratings_ids(self, user_id):
+		ratings = RatingIds.objects(user_id=user_id).only("recipe_id", "rating")
 
-		user_recipe_rate = RatingIds.objects(user_id=user.user_id, recipe_id=recipe.recipe_id).first()
+		user_ratings = dict()
+
+		for user_rating in ratings:
+			user_ratings[str(user_rating.recipe_id)] = user_rating.rating
+
+		return user_ratings
+
+	def save_user_recipe_rating(self, user_id, recipe_id, rating):
+		user_recipe_rate = RatingIds.objects(user_id=user_id, recipe_id=recipe_id).first()
 
 		#checks if rating already exists
 		if user_recipe_rate is None:
 
 			user_recipe_rate = RatingIds(
-				user_id=user.user_id,
-				recipe_id=recipe.recipe_id,
+				user_id=user_id,
+				recipe_id=recipe_id,
 				rating=rating
 			)
 
@@ -222,6 +229,17 @@ class Dao:
 		recipes = []
 
 		for recipe in all_recipes:
+			ratings = self.get_recipe_ratings(recipe.recipe_id)
+
+			total_sum = 0
+
+			for rating in ratings:
+				total_sum += float(rating)
+			try:
+				avg_rating = "{0:.2f}".format(total_sum/float(len(ratings)))
+			except:
+				avg_rating = 0
+
 			ingredients = []
 
 			for ingredient in recipe['ingredients']:
@@ -235,7 +253,8 @@ class Dao:
 				'title' : recipe['title'],
 				'labels' : recipe['labels'],
 				'cuisines' : recipe['cuisines'],
-				'ingredients' : ingredients
+				'ingredients' : ingredients,
+				'rating' : avg_rating
 			})
 
 		return recipes
@@ -246,6 +265,17 @@ class Dao:
 		recipes = []
 
 		for recipe in all_recipes:
+			ratings = self.get_recipe_ratings(recipe.recipe_id)
+
+			total_sum = 0
+
+			for rating in ratings:
+				total_sum += float(rating)
+			try:
+				avg_rating = "{0:.2f}".format(total_sum/float(len(ratings)))
+			except:
+				avg_rating = 0
+
 			ingredients = []
 
 			for ingredient in recipe['ingredients']:
@@ -259,7 +289,8 @@ class Dao:
 				'title' : recipe['title'],
 				'labels' : recipe['labels'],
 				'cuisines' : recipe['cuisines'],
-				'ingredients' : ingredients
+				'ingredients' : ingredients,
+				'rating' : avg_rating
 			})
 
 		return recipes
@@ -295,6 +326,7 @@ class Dao:
 
 		_reviews = []
 		_reviews.append({ 'id':review.id, 'text':review.text, 'user_fb_id':review.user.fb_id, 'user_id':str(review.user.id) , 'date':str(review.date) })
+		return _reviews
 
 	def delete_recipe_review(self, recipe_id, review_id):
 		return Recipe.objects(id=str(recipe_id)).update(pull__reviews__id=str(review_id))
@@ -313,7 +345,10 @@ class Dao:
 			query['cuisines'] = { "$in" : cuisines }
 
 		if ingredients:
-			query['ingredients'] = { "$elemMatch" : {  "name" :  { "$in" : ingredients } } }
+			query['$and'] = []
+			for ingredient in ingredients:
+				query['$and'].append({ "ingredients.name" : { "$eq" : ingredient } })
+			#query['ingredients'] = { "$elemMatch" : {  "name" :  { "$in" : ingredients } } }
 
 		results = self.db.recipe.find(query)
 		print results.count()
@@ -344,6 +379,9 @@ class Dao:
 				recommended_recipes_ids.append(str(recommended_recipe.id))
 
 		return list(set(recommended_recipes_ids))
+
+	def get_random_recipes(self):
+		return Recipe.objects[:20]
 
 	# INGREDIENTS
 	def get_ingredients_per_recipe_id(self, recipe_id):

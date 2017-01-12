@@ -177,7 +177,8 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'jkAngularRatingStars'])
 
     $scope.isFavoriteRecipe;
 
-    $scope.init = function(recipe_id, user_id, isFavorite, rating) {
+    $scope.init = function(recipe_oid, recipe_id, user_id, isFavorite, rating) {
+        $scope.recipe_oid = recipe_oid;
         $scope.recipe_id = recipe_id;
         $scope.user_id = user_id;
 
@@ -187,10 +188,10 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'jkAngularRatingStars'])
             $scope.isFavoriteRecipe = true;
 
         $scope.rating = rating;
+        console.log($scope.rating)
 
-        $http.get('/recipe/reviews', { params : { recipe_id: recipe_id } })
+        $http.get('/recipe/reviews', { params : { recipe_id: recipe_oid } })
         .success(function(response) {
-            console.log(response.reviews)
             $scope.reviews = response.reviews;
         });
     }
@@ -211,7 +212,7 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'jkAngularRatingStars'])
 
     $scope.favorite = function() {
         var data = {
-            recipe_id : $scope.recipe_id
+            recipe_id : $scope.recipe_oid
         }
 
         $http.post('/favorite/new', data)
@@ -223,7 +224,7 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'jkAngularRatingStars'])
 
     $scope.unfavorite = function() {
         var data = {
-            recipe_id : $scope.recipe_id
+            recipe_id : $scope.recipe_oid
         }
 
         $http.post('/favorite/delete', data)
@@ -238,7 +239,7 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'jkAngularRatingStars'])
         var review = $scope.review;
 
         var data = {
-            recipe_id: $scope.recipe_id,
+            recipe_id: $scope.recipe_oid,
             review: review
         }
 
@@ -253,7 +254,7 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'jkAngularRatingStars'])
     $scope.delete_comment = function(review) {
 
         var data = {
-            recipe_id: $scope.recipe_id,
+            recipe_id: $scope.recipe_oid,
             date: review.date,
             review_id: review.id
         }

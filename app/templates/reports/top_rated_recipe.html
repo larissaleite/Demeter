@@ -1,0 +1,41 @@
+<!-- This is the generic SlamData embedding code. -->
+<!-- You can put this in the header or save it in a .js file included in the document -->
+<script type="text/javascript">
+var slamdata = window.SlamData = window.SlamData || {};
+slamdata.embed = function(options) {
+  var queryParts = [];
+  if (options.permissionTokens) queryParts.push("permissionTokens=" + options.permissionTokens.join(","));
+  if (options.stylesheets && options.stylesheets.length) queryParts.push("stylesheets=" + options.stylesheets.map(encodeURIComponent).join(","));
+  var queryString = "?" + queryParts.join("&");
+  var varsParam = options.vars ? "/?vars=" + encodeURIComponent(JSON.stringify(options.vars)) : "";
+  var uri = "http://10.193.129.41:20223/slamdata/workspace.html" + queryString;
+  var iframe = document.createElement("iframe");
+  iframe.width = iframe.height = "100%";
+  iframe.frameBorder = 0;
+  iframe.src = uri + "#" + options.deckPath + options.deckId + "/view" + varsParam;
+  var deckElement = document.getElementById("sd-deck-" + options.deckId);
+  if (deckElement) deckElement.appendChild(iframe);
+};
+</script>
+
+
+<br/>
+<br/>
+<br/>
+<br/>
+<div >
+  <h2 style="width:40%; margin:auto"> Monthly Top Rated Recipes  </h2>
+
+
+<!-- This is the DOM element that the deck will be embedded into -->
+<div id="sd-deck-7ff9aaa0-ff07-4ad8-8d11-e121a0f31e92"></div>
+</div>
+<!-- This is the code that performs the deck insertion, placing it at the end of the body is suggested -->
+<script type="text/javascript">
+  SlamData.embed({
+    deckPath: "/demeter/demeter/ws_people_interested.slam/",
+    deckId: "7ff9aaa0-ff07-4ad8-8d11-e121a0f31e92",
+    // An array of custom stylesheets URLs can be provided here
+    stylesheets: []
+  });
+</script>
