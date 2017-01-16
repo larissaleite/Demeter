@@ -27,8 +27,8 @@ dao = Dao('demeter_demo')
 recommender = Recommender(dao, sc)
 
 #initializing lists to hold user information
-app.config['user_favorite_recipes'] = []
-app.config['user_recipes_rating'] = dict()
+#app.config['user_favorite_recipes'+str(user.user_id)] = []
+#app.config['user_recipes_rating'+str(user.user_id)] = dict()
 
 #initializing flask's login manager
 login_manager = LoginManager()
@@ -41,11 +41,13 @@ from app.models import User
 def load_user(user_id):
 	user = User.objects.filter(id=user_id).first()
 
-	if not app.config['user_favorite_recipes']:
-		app.config['user_favorite_recipes'] = dao.get_user_favorite_recipes_ids(user.id)
+	global initial_load
 
-	if not app.config['user_recipes_rating']:
-		app.config['user_recipes_rating'] = dao.get_user_dict_ratings_ids(user.user_id)
+	#if not app.config['user_favorite_recipes'+str(user.user_id)]:
+	app.config['user_favorite_recipes'+str(user.user_id)] = dao.get_user_favorite_recipes_ids(user.id)
+
+	#if not app.config['user_recipes_rating'+str(user.user_id)]:
+	app.config['user_recipes_rating'+str(user.user_id)] = dao.get_user_dict_ratings_ids(user.user_id)
 
 	return user
 

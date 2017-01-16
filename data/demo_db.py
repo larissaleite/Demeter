@@ -277,17 +277,29 @@ def create_recipes_integrated():
 	for full_recipe in all_recipes:
 		recipe = Recipe.objects(title=full_recipe['title']).first()
 
-		print recipe.title
-
-		recommended_recipes = []
+		#print recipe.cuisines
+		print "----"
+		'''recommended_recipes = []
 
 		title_recommended_recipes = full_recipe['recommended']
 
 		for recommended in title_recommended_recipes:
 			recommended_recipe = Recipe.objects(title=recommended).first()
 			recipe.recommended_recipes.append(recommended_recipe)
-		
-		recipe.save()
+
+		recipe.save()'''
+		cuisines = []
+		for cuisine in recipe.cuisines:
+			if "[" in cuisine:
+				cuisines.append(cuisine.split("'")[1])
+			else:
+				cuisines.append(cuisine)
+
+		recipe.update(**{
+			'set__cuisines' : cuisines
+		})
+
+
 
 if __name__ == '__main__':
 	if __package__ is None:

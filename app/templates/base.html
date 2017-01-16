@@ -19,6 +19,7 @@
     <link href='http://fonts.googleapis.com/css?family=Roboto+Slab' rel='stylesheet' type='text/css'>
     <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Merriweather" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Alex+Brush" rel="stylesheet">
 
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/ng-tags-input/2.0.1/ng-tags-input.min.css" />
 
@@ -51,6 +52,7 @@
     body {
       padding-top:7%;
       font-family: 'Merriweather', serif;
+      background: none;
     }
 
     h1, h2, h3, h4, nav {
@@ -107,6 +109,10 @@
    .navbar-right {
        font-size: 18px !important;
    }
+
+   .navbar-brand {
+       font-family: 'Alex Brush', cursive !important;
+   }
     </style>
 </head>
 <body ng-app="demeter">
@@ -133,8 +139,8 @@
                     <ul class="nav navbar-nav navbar-right">
                         <li><a href="/home">Home</a></li>
                         <li><a href="/profile">Profile</a></li>
+                        <li><a href="/myrecipes">My recipes</a></li>
                         <li><a href="/search">Search</a></li>
-                        <li><a href="/analysis">Analysis</a></li>
                         <li class="dropdown">
                             <a href="" class="dropdown-toggle" data-toggle="dropdown">
                                 <img class="img-circle profile-avatar" src="https://graph.facebook.com/{{ current_user.fb_id }}/picture">

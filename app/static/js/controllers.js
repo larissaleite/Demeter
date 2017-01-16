@@ -267,135 +267,6 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'jkAngularRatingStars'])
     }
 }])
 
-.controller('AnalysisCtrl', ['$scope', '$http', '$filter', function($scope, $http, $filter) {
-
-    //$scope.categories = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-
-
-    $scope.showWeek = false; $scope.showMonth = false; $scope.showYear = false;
-
-    $scope.countries = ["All", "Belgium", "Spain", "France", "Germany"]
-
-    $scope.country = $scope.countries[0];
-
-    $scope.month = {
-      value: new Date(2016, 0, 1)
-    };
-
-    $scope.week = {
-      value: new Date(2016, 0, 3)
-    };
-
-    $scope.selectWeek = function() {
-        $scope.showWeek = true;
-        $scope.showMonth = false;
-        $scope.showYear = false;
-    }
-
-    $scope.selectMonth = function() {
-        $scope.showWeek = false;
-        $scope.showMonth = true;
-        $scope.showYear = false;
-    }
-
-    $scope.selectYear = function() {
-        $scope.showWeek = false;
-        $scope.showMonth = false;
-        $scope.showYear = true;
-    }
-
-    $scope.getData = function() {
-        if ($scope.showWeek) {
-            var week = $scope.week.value;
-            /*week = week.split("-")[1]
-            if (week.charAt(0) == '0') {
-                week = week.charAt(1)
-            }*/
-            console.log(week)
-            var week_no = $filter('date')(week, 'w');
-            console.log(week_no);
-
-            /*$http.get('/comments_favorites_week', { params : { week: week, country : country } })
-            .success(function(response) {
-                console.log(response)
-            });*/
-        } else if ($scope.showMonth) {
-            var month = $scope.month.value + '';
-            month = month.split(" ")[1]
-            console.log(month)
-            console.log($scope.country)
-
-            $http.get('/comments_favorites_month', { params : { month: month, country : country } })
-            .success(function(response) {
-                console.log(response)
-            });
-        } else  {
-            $http.get('/comments_favorites_year', { params : { country : $scope.country } })
-            .success(function(response) {
-                $scope.categories = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug",  "Sep", "Oct", "Nov", "Dec"]
-
-                var favorite_months_data = new Array(12+1).join('0').split('').map(parseFloat)
-
-                for (var r in response) {
-                    console.log(response[r])
-                    if (response[r]._id == "Jan") {
-                        favorite_months_data[0] = response[r].count;
-                    }  else if (response[r]._id == "Feb") {
-                        favorite_months_data[1] = response[r].count;
-                    } else if (response[r]._id == "Mar") {
-                        favorite_months_data[2] = response[r].count;
-                    } else if (response[r]._id == "Apr") {
-                        favorite_months_data[3] = response[r].count;
-                    } else if (response[r]._id == "May") {
-                        favorite_months_data[4] = response[r].count;
-                    } else if (response[r]._id == "June") {
-                        favorite_months_data[5] = response[r].count;
-                    } else if (response[r]._id == "July") {
-                        favorite_months_data[6] = response[r].count;
-                    } else if (response[r]._id == "Aug") {
-                        favorite_months_data[7] = response[r].count;
-                    } else if (response[r]._id == "Sep") {
-                        favorite_months_data[8] = response[r].count;
-                    } else if (response[r]._id == "Oct") {
-                        favorite_months_data[9] = response[r].count;
-                    } else if (response[r]._id == "Nov") {
-                        favorite_months_data[10] = response[r].count;
-                    } else if (response[r]._id == "Dec") {
-                        favorite_months_data[11] = response[r].count;
-                    }
-                }
-
-                $scope.favorite_months_data = favorite_months_data;
-
-                $(function () {
-                    Highcharts.chart('chart_nb_interaction', {
-                        chart: {
-                            type: 'line'
-                        },
-                        title: {
-                            text: 'Number of Interaction (Global)'
-                        },
-                        xAxis: {
-                              categories: $scope.categories
-                        },
-                    series: [
-                          {
-                            name: 'Favourite',
-                            data: $scope.favorite_months_data
-                          },
-                          {
-                            name: 'Comment',
-                            data: [18, 21, 25, 26, 23, 6, 9]
-                        }
-                       ]
-                    });
-                });
-            });
-        }
-    }
-
-  }])
-
 .controller('SearchCtrl', ['$scope', '$http', '$filter', function($scope, $http, $filter) {
     $scope.recipes = [];
 
@@ -437,6 +308,8 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'jkAngularRatingStars'])
     $scope.labelsSelected;
     $scope.cuisinesSelected;
 
+    $scope.showResults = false;
+
     $scope.search = function() {
         var search = {
             'title' : $scope.title,
@@ -449,6 +322,7 @@ angular.module('demeter', ['oi.select', 'ngSanitize', 'jkAngularRatingStars'])
         .success(function(response) {
             console.log(response)
             $scope.recipes = response
+            $scope.showResults = true;
         });
     }
 }])

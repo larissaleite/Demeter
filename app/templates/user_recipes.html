@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="col-md-1">
+</div>
+
+<div class="col-md-11">
+
+    {% if favorite_recipes %}
+    <div class="row">
+        <div class="col-xs-12">
+            <h4>My favorite recipes <i class="fa fa-users" aria-hidden="true"></i></h4>
+            {% for recipe_row in favorite_recipes | batch(4) %}
+            <div class="row">
+                {% for recipe in recipe_row %}
+                <div class="col-md-3">
+                    <div class="thumbnail">
+                        <img src="{{ recipe.img  }}" alt="...">
+                        <div class="caption">
+                            <p><a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a></p>
+                            <p class="text-rating">
+                                <i class="fa fa-star" aria-hidden="true"></i> {{ recipe.rating }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+    {% endif %}
+
+    <hr>
+
+    {% if rated_recipes %}
+    <div class="row">
+        <div class="col-xs-12">
+            <h4>My ratings <i class="fa fa-users" aria-hidden="true"></i></h4>
+            {% for recipe_row in rated_recipes | batch(4) %}
+            <div class="row">
+                {% for recipe in recipe_row %}
+                <div class="col-md-3">
+                    <div class="thumbnail">
+                        <img src="{{ recipe.img  }}" alt="...">
+                        <div class="caption">
+                            <p><a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a></p>
+                            <p class="text-rating">
+                                {% set recipe_id = recipe.recipe_id|string %}
+                                <i class="fa fa-star" aria-hidden="true"></i> {{ user_ratings[recipe_id] }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock content %}

@@ -39,7 +39,7 @@ class Recommender:
 		user_ratings = self.dao.get_user_ratings_ids(user_id)
 
 		if len(user_ratings) == 0:
-			recommended_recipes_ids = self.preference_engine.get_most_popular_recipes(all_user_recipe_rating)
+			return []
 		else:
 			recommended_recipes_ids = self.preference_engine.get_recommended_recipes_for_user(all_user_recipe_rating, user_id)
 

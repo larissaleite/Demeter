@@ -1,10 +1,11 @@
 from app import app
 from config import APP_STATIC
 
-from flask import Flask, render_template, jsonify, make_response, request, flash
+from flask import Flask, render_template, jsonify, make_response, request, flash, redirect
 from flask_login import login_user, current_user, login_required
 from datetime import datetime
 from bson import ObjectId, json_util
+import json
 
 from app import dao
 from app import recommender
@@ -27,20 +28,43 @@ def home():
 
 	return render_template("home.html", popular_recipes=popular_recipes, recommended_recipes=recommended_recipes, favorite_recipes=favorite_recipes, similar_recipes=similar_recipes, random_recipes=random_recipes)
 
+@app.route('/myrecipes', methods=['GET'])
+@login_required
+def user_recipes():
+	favorite_recipes = dao.get_user_favorite_recipes(current_user.id)
+	rated_recipes_ids = app.config["user_recipes_rating"+str(current_user.user_id)].keys()
+	rated_recipes = dao.get_recipes_from_ids(rated_recipes_ids)
+	return render_template("user_recipes.html", favorite_recipes=favorite_recipes, rated_recipes=rated_recipes, user_ratings=app.config["user_recipes_rating"+str(current_user.user_id)])
+
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
 	if request.method == 'GET':
 		return render_template('profile.html', user=current_user)
 	else:
+		location = None
+		coordinates = None
+		preferred_ingredients = []
+		diet_labels = []
+		cuisines = []
+
 		age = request.json['age']
 		gender = request.json['gender']
-		location = request.json['location']
-		coordinates = request.json['coordinates']
-		restricted_ingredients = request.json['restricted_ingredients']
-		preferred_ingredients = request.json['preferred_ingredients']
-		diet_labels = request.json['diet_labels']
-		favorite_cuisines = request.json['favorite_cuisines']
+
+		if 'location' in request.json:
+			location = request.json['location']
+		if 'coordinates' in request.json:
+			coordinates = request.json['coordinates']
+		if 'restricted_ingredients' in request.json:
+			restricted_ingredients = request.json['restricted_ingredients']
+		else:
+			restricted_ingredients = []
+		if 'preferred_ingredients' in request.json:
+			preferred_ingredients = request.json['preferred_ingredients']
+		if 'diet_labels' in request.json:
+			diet_labels = request.json['diet_labels']
+		if 'favorite_cuisines' in request.json:
+			favorite_cuisines = request.json['favorite_cuisines']
 
 		dao.set_user(current_user.id, age, gender, location, coordinates, preferred_ingredients, restricted_ingredients, diet_labels, favorite_cuisines)
 
@@ -82,11 +106,11 @@ def get_recipe(recipe_id):
 	is_favorite_recipe = False
 	rating = 0
 
-	if recipe_id in app.config['user_favorite_recipes']:
+	if recipe_id in app.config['user_favorite_recipes'+str(current_user.user_id)]:
 		is_favorite_recipe = True
 
-	if str(recipe['recipe_id']) in app.config['user_recipes_rating']:
-		rating = app.config['user_recipes_rating'][str(recipe['recipe_id'])]
+	if str(recipe['recipe_id']) in app.config['user_recipes_rating'+str(current_user.user_id)]:
+		rating = app.config['user_recipes_rating'+str(current_user.user_id)][str(recipe['recipe_id'])]
 
 	user_recipe_data = {
 		'is_favorite_recipe' : is_favorite_recipe,
@@ -102,7 +126,7 @@ def rate_recipe():
 	rating = int(request.json['rating'])
 
 	dao.save_user_recipe_rating(current_user.user_id, recipe_id, rating)
-	app.config['user_recipes_rating'][str(recipe_id)] = rating
+	app.config['user_recipes_rating'+str(current_user.user_id)][str(recipe_id)] = rating
 
 	return "Rating added to recipes"
 
@@ -113,8 +137,8 @@ def favorite_recipe():
 
 	dao.favorite_recipe(recipe_id, current_user.id)
 
-	if recipe_id not in app.config['user_favorite_recipes']:
-		app.config['user_favorite_recipes'].append(recipe_id)
+	if recipe_id not in app.config['user_favorite_recipes'+str(current_user.user_id)]:
+		app.config['user_favorite_recipes'+str(current_user.user_id)].append(recipe_id)
 
 	return "Recipe added to favorites"
 
@@ -125,7 +149,7 @@ def unfavorite_recipe():
 
 	dao.unfavorite_recipe(recipe_id, current_user.id)
 
-	app.config['user_favorite_recipes'].remove(str(recipe_id))
+	app.config['user_favorite_recipes'+str(current_user.user_id)].remove(str(recipe_id))
 
 	return "Unfavorited!"
 
@@ -163,13 +187,6 @@ def get_user():
 	user = dao.get_user(current_user.id)
 	return jsonify(user=user)
 
-@app.route('/comments_favorites_year', methods=['GET'])
-def get_comments_favorites_year():
-	country = request.args["country"]
-
-	response = dao.get_analysis_favorites_reviews_year(country)
-	return response
-
 @app.route('/recommender', methods=['GET'])
 def recommender_demo():
 	return render_template('recommender_demo.html')
@@ -184,6 +201,10 @@ def get_labels():
 	all_labels = dao.get_all_labels()
 	return jsonify( { 'all_labels': all_labels } )
 
+@app.route('/dashboard', methods=['GET'])
+def get_dashboard():
+	return redirect('http://10.193.129.41:5000/dashboard')
+
 @app.route('/api/cuisines', methods=['GET'])
 def get_cuisines():
 	all_cuisines = dao.get_all_cuisines()
@@ -192,35 +213,3 @@ def get_cuisines():
 @app.route('/template_select', methods = ['GET'])
 def get_template_select():
 	return render_template('template_select.html')
-
-@app.route('/analysis', methods= ['GET'])
-def get_dashboard():
-	return render_template('dashboard2.html')
-
-@app.route('/dashboard', methods=['GET'])
-def dashboard():
-	return render_template('dashboard.html', user=current_user)
-
-@app.route('/dash1', methods=['GET'])
-def dash():
-	return render_template('reports/inter_weekly.html', user=current_user)
-
-@app.route('/dash2', methods=['GET'])
-def dash1():
-	return render_template('reports/inter_monthly.html', user=current_user)
-
-@app.route('/dash3', methods=['GET'])
-def dash2():
-	return render_template('reports/top_rated_recipe.html', user=current_user)
-
-@app.route('/dash4', methods=['GET'])
-def dash3():
-	return render_template('reports/favourite_recipe.html', user=current_user)
-
-@app.route('/dash5', methods=['GET'])
-def dash4():
-	return render_template('reports/cuisine_consp.html', user=current_user)
-
-@app.route('/dash6', methods=['GET'])
-def dash5():
-	return render_template('reports/ration_analysis.html', user=current_user)

@@ -11,7 +11,6 @@ class ExtendedIngredient(Ingredient):
 	full_text = StringField(max_length=500)
 	amount = IntField()
 	unit = StringField(max_length=25)
-	category = StringField(max_length=50) #just for spoonacular
 
 class Review(EmbeddedDocument):
 	id = StringField(max_length=500, required=True)

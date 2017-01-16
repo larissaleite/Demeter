@@ -6,30 +6,57 @@
 .btn-facebook, .btn-facebook:hover {
   text-align:center;
   font-family: 'Lucida Grande';
-  width:70%;
-  margin-left:10%;
+  width: 45%;
+    margin-left: 6%;
+    margin-top: -3%;
+}
+
+/* http://christianweightlossblog.com/wp-content/uploads/2016/02/bigstock-cooking-still-life-food-and-86349662.jpg
+http://twistedhealthyfoods.com/image/cache/data/3-2032x1208.jpg
+https://www.legacyshare.com/media/indian-food.jpg
+http://3.bp.blogspot.com/-fy3StLJgdWc/VN4a8nWxAzI/AAAAAAAACXY/-8moUJwTNFY/s1600/167621-Delicious%2BFood%2BRecipe%2BHD%2BWallpaperz.jpg
+*/
+
+body {
+  background: linear-gradient(
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0.2)
+    ),url('http://christianweightlossblog.com/wp-content/uploads/2016/02/bigstock-cooking-still-life-food-and-86349662.jpg');
+  background-size:   cover;                      /* <------ */
+    background-repeat: no-repeat;
+}
+
+.intro-text {
+     /*background-color: rgba(0, 0, 0, 0.6);*/
+     color: #f8f8f8;
+    padding: 2%;
+    margin-top: -8%;
 }
 
 .main {
-    margin-left: 7%;
+    color:#f8f8f8;
+}
+
+.login {
+    margin-top: -7%;
 }
 
 </style>
 
-<div class="col-md-3">
-</div>
-
-<div class="col-md-5 main">
-  <img src="{{ url_for('static', filename='images/demeter.png') }}">
-
-  <div id="facebook-login-btn">
-   <a href="/login" class="btn btn-block btn-social btn-facebook btn-lg">
-    <i class="fa fa-facebook"></i> Log in in with Facebook
-   </a>
+<div class="col-md-8 main">
+  <p style="font-size:56px; display:inline;">Welcome to <p style="font-family:'Alex Brush', cursive; display: inline; font-size:120px;">Demeter</p></p>
+  <div class="intro-text">
+  <h4>The source of your cooking inspiration where you can find recommendations based on your food preferences</h4>
   </div>
-</div>
+  <div class="login">
 
-<div class="col-md-4">
+    <img src="{{ url_for('static', filename='images/demeter.png') }}">
+    <div id="facebook-login-btn">
+     <a href="/login" class="btn btn-block btn-social btn-facebook btn-lg">
+      <i class="fa fa-facebook"></i> Log in with Facebook
+     </a>
+    </div>
+</div>
 </div>
 
 {% endblock content %}

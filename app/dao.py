@@ -172,7 +172,7 @@ class Dao:
 		return ratings
 
 	def get_user_ratings_recipe_ids(self, user_id):
-		 recipe_ids = RatingIds.objects(user_id=user_id).scalar("recipe_id")
+		 recipe_ids = RatingIds.objects(user_id=user_id).filter(rating__gt=3).scalar("recipe_id")
 		 recipe_oids = Recipe.objects(recipe_id__in=recipe_ids).scalar("id")
 		 return [str(id) for id in recipe_oids]
 
@@ -248,6 +248,7 @@ class Dao:
 				})
 
 			recipes.append({
+				'recipe_id' : recipe['recipe_id'],
 				'id' : recipe['id'],
 				'img' : recipe['image'],
 				'title' : recipe['title'],

@@ -22,11 +22,11 @@ class PreferenceEngine():
 			#evaluate_model(model, ratings)
 
 			# Cache
-			model.userFeatures().cache()
-			model.productFeatures().cache()
+			#model.userFeatures().cache()
+			#model.productFeatures().cache()
 
 			# Save model
-			model.save(self.spark, "target/tmp/myCollaborativeFilter")
+			#model.save(self.spark, "target/tmp/myCollaborativeFilter")
 
 			return model
 
